@@ -17,6 +17,14 @@ import { defineComponent } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
 
 import { api } from 'boot/axios'
+import { lucid } from 'boot/lucid'
+
+const nami = await window.cardano.nami.enable()
+console.log('nami', nami)
+lucid.selectWallet(nami)
+
+const utxos = await lucid.wallet.getUtxos()
+console.log('utxos', utxos)
 
 export default defineComponent({
   name: 'IndexPage',
