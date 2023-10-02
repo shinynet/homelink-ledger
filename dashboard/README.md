@@ -1,6 +1,6 @@
-# Quasar App (quasar-project)
+# HomeLink Ledger (homelink-ledger)
 
-A Quasar Project
+A Home Automation Project on Cardano
 
 ## Install the dependencies
 ```bash

@@ -1,7 +1,7 @@
 {
-  "name": "quasar-project",
+  "name": "homelink-ledger",
   "version": "0.0.1",
-  "description": "A Quasar Project",
+  "description": "HomeLink Ledger",
   "productName": "Quasar App",
   "author": "A Torres <atorres@thecodeofarms.com>",
   "private": true,

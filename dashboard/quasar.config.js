@@ -53,7 +53,7 @@ module.exports = configure(function (ctx) {
     build: {
       env: require('dotenv').config().parsed,
 
-      vueRouterMode: 'hash', // available values: 'hash', 'history'
+      vueRouterMode: 'history', // available values: 'hash', 'history'
 
       // transpile: false,
       // publicPath: '/',
@@ -151,9 +151,9 @@ module.exports = configure(function (ctx) {
       },
 
       manifest: {
-        name: 'Quasar App',
-        short_name: 'Quasar App',
-        description: 'A Quasar Project',
+        name: 'Homelink Ledger',
+        short_name: 'Homelink Ledger',
+        description: 'A Home Automation Project on Cardano',
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',
@@ -218,7 +218,7 @@ module.exports = configure(function (ctx) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'quasar-project'
+        appId: 'homelink-ledger'
       },
 
       // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain
