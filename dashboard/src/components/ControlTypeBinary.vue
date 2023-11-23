@@ -1,8 +1,5 @@
 <template>
-  <q-btn
-    flat
-    v-if="ControlType === 5"
-    @click="handleClick">
+  <q-btn flat @click="handleClick">
     {{Label}}
   </q-btn>
 </template>

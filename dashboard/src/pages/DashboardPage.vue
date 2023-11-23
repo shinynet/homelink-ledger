@@ -14,7 +14,7 @@ const { data: devices } = useQuery({
     params: {
       request: 'getstatus',
       everything: true,
-      ref: '74,75,6,37'
+      ref: '74,75,6,77'
     }
   })
     .then(({ data }) => data.Devices)

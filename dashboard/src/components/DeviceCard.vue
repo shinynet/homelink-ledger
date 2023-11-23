@@ -15,11 +15,18 @@
     <q-separator />
 
     <q-card-actions>
-      <control-type-button
+      <component
         v-for="controlPair in ControlPairs"
         :key="controlPair.CCIndex"
+        :is="controlPair.ControlType === 5 ? ControlTypeBinary : ControlTypeRange"
         v-bind="controlPair"
+        :value="value"
         @change="handleDeviceChange"/>
+<!--      <control-type-button-->
+<!--        v-for="controlPair in ControlPairs"-->
+<!--        :key="controlPair.CCIndex"-->
+<!--        v-bind="controlPair"-->
+<!--        @change="handleDeviceChange"/>-->
     </q-card-actions>
   </q-card>
 </template>
@@ -28,7 +35,12 @@
 import { computed } from 'vue'
 import { api } from 'boot/axios'
 import { useQueryClient, useMutation } from '@tanstack/vue-query'
-import ControlTypeButton from 'components/ControlTypeButton.vue'
+import ControlTypeBinary from 'components/ControlTypeBinary.vue'
+import ControlTypeRange from 'components/ControlTypeRange.vue'
+
+defineOptions({
+  inheritAttrs: false
+})
 
 const props = defineProps({
   ControlPairs: {
@@ -57,6 +69,10 @@ const props = defineProps({
   },
   status_image: {
     type: String,
+    required: true
+  },
+  value: {
+    type: Number,
     required: true
   }
 })
