@@ -4,9 +4,7 @@ const api = axios.create({
   baseURL: process.env.HS4_BASE_URL,
   params: {
     user: process.env.HS4_USER,
-    pass: process.env.HS4_PASS,
-    everything: true,
-    ref: '75'
+    pass: process.env.HS4_PASS
   }
 })
 
