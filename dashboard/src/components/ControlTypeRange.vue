@@ -1,7 +1,4 @@
 <template>
-<!--  <q-btn flat @click="handleClick">-->
-<!--    {{Label}}-->
-<!--  </q-btn>-->
   <q-slider
     v-model="value"
     :min="Range.RangeStart"
