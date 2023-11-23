@@ -22,19 +22,14 @@
         v-bind="controlPair"
         :value="value"
         @change="handleDeviceChange"/>
-<!--      <control-type-button-->
-<!--        v-for="controlPair in ControlPairs"-->
-<!--        :key="controlPair.CCIndex"-->
-<!--        v-bind="controlPair"-->
-<!--        @change="handleDeviceChange"/>-->
     </q-card-actions>
   </q-card>
 </template>
 
 <script setup>
 import { computed } from 'vue'
-import { api } from 'boot/axios'
 import { useQueryClient, useMutation } from '@tanstack/vue-query'
+import { controlDeviceMutation } from 'src/endpoints'
 import ControlTypeBinary from 'components/ControlTypeBinary.vue'
 import ControlTypeRange from 'components/ControlTypeRange.vue'
 
@@ -76,7 +71,7 @@ const props = defineProps({
     required: true
   }
 })
-console.log('props: ', props)
+
 const statusImage = computed(() => {
   const host = process.env.HS4_BASE_URL
   const path = props.status_image
@@ -89,16 +84,14 @@ const statusImage = computed(() => {
 const queryClient = useQueryClient()
 
 const { mutate: mutateDevice } = useMutation({
-  mutationFn: ({ value }) => api.get('JSON', {
-    params: { request: 'controldevicebyvalue', value, ref: props.id }
-  }),
+  mutationFn: controlDeviceMutation,
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['devices'] })
   }
 })
 
 const handleDeviceChange = value => {
-  mutateDevice({ value })
+  mutateDevice({ ref: props.id, value })
 }
 </script>
 

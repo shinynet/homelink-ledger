@@ -15,7 +15,7 @@
           HomeLink Ledger
         </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <wallet-selector/>
       </q-toolbar>
     </q-header>
 
@@ -48,6 +48,7 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import EssentialLink from 'components/EssentialLink.vue'
+import WalletSelector from 'components/WalletSelector.vue'
 
 const linksList = [
   {
@@ -66,6 +67,7 @@ export default defineComponent({
   name: 'MainLayout',
 
   components: {
+    WalletSelector,
     EssentialLink
   },
 
