@@ -34,6 +34,25 @@ import { api } from 'boot/axios'
  * @property {Device[]} Devices
  */
 
+export const getWalletsQuery = () => Promise.resolve([
+  {
+    id: 'nami',
+    label: window.cardano.nami.name,
+    installed: !!window.cardano.nami
+  },
+  {
+    id: 'lace',
+    label: window.cardano.lace.name,
+    installed: !!window.cardano.lace
+  },
+  {
+    id: 'eternl',
+    label: window.cardano?.eternl?.name,
+    installed: !!window.cardano.eternl
+  }
+])
+  .then(wallets => wallets.filter(wallet => wallet.installed))
+
 /**
  *
  * @returns {Promise<Status>}
