@@ -1,5 +1,5 @@
 <template>
-  <q-card>
+  <q-card class="card">
     <q-card-section>
       <div class="text-h6">{{location}} {{name}}</div>
       <div class="text-subtitle2">{{location2}}</div>
@@ -108,6 +108,10 @@ const handleDeviceChange = value => {
 </script>
 
 <style scoped>
+.card {
+  height: 300px;
+  width: 300px;
+}
 .icon {
   height: 50px;
   width: 50px;

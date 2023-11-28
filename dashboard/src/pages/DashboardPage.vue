@@ -1,6 +1,15 @@
 <template>
   <q-page padding class="grid">
+    <template v-if="isPending">
+      <skeleton-card v-for="n in 3" :key="n"/>
+    </template>
+
+    <q-banner v-else-if="isError" class="error-banner text-white bg-red">
+      {{error.message}}
+    </q-banner>
+
     <device-card
+      v-else
       v-for="{
         ref,
         ControlPairs: controlPairs,
@@ -10,7 +19,7 @@
         status,
         status_image: statusImage,
         value
-      } in devices"
+      } in data"
       :key="ref"
       :control-pairs="controlPairs"
       :id="ref"
@@ -27,8 +36,9 @@
 import { useQuery } from '@tanstack/vue-query'
 import { getStatusQuery } from 'src/endpoints'
 import DeviceCard from 'components/DeviceCard.vue'
+import SkeletonCard from 'components/SkeletonCard.vue'
 
-const { data: devices } = useQuery({
+const { data, error, isError, isPending } = useQuery({
   queryFn: getStatusQuery,
   queryKey: ['devices']
 })
@@ -36,7 +46,11 @@ const { data: devices } = useQuery({
 
 <style scoped>
 .grid {
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
   gap: 16px;
+}
+.error-banner {
+  max-height: 50px;
 }
 </style>
