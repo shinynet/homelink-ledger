@@ -1,31 +1,23 @@
 <template>
   <q-slider
-    v-model="value"
-    :min="Range.RangeStart"
-    :max="Range.RangeEnd"
+    v-model="model"
+    :min="rangeStart"
+    :max="rangeEnd"
     label
-    label-always
-    :label-value="Range.RangeStatusPrefix + value + Range.RangeStatusSuffix"/>
+    :label-value="labelValue"/>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-// const emit = defineEmits(['change'])
+import { computed, ref, watch } from 'vue'
 
+defineOptions({
+  inheritAttrs: false
+})
+const emit = defineEmits(
+  ['change']
+)
 const props = defineProps({
-  ControlType: {
-    type: Number,
-    required: true
-  },
-  ControlValue: {
-    type: Number,
-    required: true
-  },
-  Label: {
-    type: String,
-    required: true
-  },
-  Range: {
+  range: {
     type: Object,
     required: true
   },
@@ -35,6 +27,22 @@ const props = defineProps({
   }
 })
 
-const value = ref(props.value)
-// const handleClick = () => emit('change', props.ControlValue)
+const {
+  RangeEnd: rangeEnd,
+  RangeStart: rangeStart,
+  RangeStatusPrefix: rangeStatusPrefix,
+  RangeStatusSuffix: rangeStatusSuffix
+} = props.range
+
+const model = ref(props.value)
+
+const labelValue = computed(
+  () => rangeStatusPrefix + props.value + rangeStatusSuffix
+)
+
+const handleClick = () => {
+  emit('change', model.value)
+}
+
+watch(model, handleClick)
 </script>

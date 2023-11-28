@@ -1,26 +1,28 @@
 <template>
   <q-btn flat @click="handleClick">
-    {{Label}}
+    {{label}}
   </q-btn>
 </template>
 
 <script setup>
-const emit = defineEmits(['change'])
-
+defineOptions({
+  inheritAttrs: false
+})
+const emit = defineEmits(
+  ['change']
+)
 const props = defineProps({
-  ControlType: {
+  controlValue: {
     type: Number,
     required: true
   },
-  ControlValue: {
-    type: Number,
-    required: true
-  },
-  Label: {
+  label: {
     type: String,
     required: true
   }
 })
 
-const handleClick = () => emit('change', props.ControlValue)
+const handleClick = () => {
+  emit('change', props.controlValue)
+}
 </script>

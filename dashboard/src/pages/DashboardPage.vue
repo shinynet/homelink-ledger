@@ -1,9 +1,25 @@
 <template>
   <q-page padding class="grid">
     <device-card
-      v-for="device in devices"
-      :key="device.ref"
-      v-bind="device"/>
+      v-for="{
+        ref,
+        ControlPairs: controlPairs,
+        location,
+        location2,
+        name,
+        status,
+        status_image: statusImage,
+        value
+      } in devices"
+      :key="ref"
+      :control-pairs="controlPairs"
+      :id="ref"
+      :location="location"
+      :location2="location2"
+      :name="name"
+      :status="status"
+      :status-image="statusImage"
+      :value="value"/>
   </q-page>
 </template>
 
