@@ -1,15 +1,11 @@
 <template>
   <q-page padding class="grid">
-    <template v-if="isPending">
-      <skeleton-card v-for="n in 3" :key="n"/>
-    </template>
-
-    <q-banner v-else-if="isError" class="error-banner text-white bg-red">
+    <q-banner v-if="isError" class="error-banner text-white bg-red">
       {{error.message}}
     </q-banner>
 
     <device-card
-      v-else
+      v-else-if="isSuccess"
       v-for="{
         ref,
         ControlPairs: controlPairs,
@@ -33,14 +29,28 @@
 </template>
 
 <script setup>
+import { watch } from 'vue'
+import { useQuasar } from 'quasar'
 import { useQuery } from '@tanstack/vue-query'
 import { getStatusQuery } from 'src/endpoints'
 import DeviceCard from 'components/DeviceCard.vue'
-import SkeletonCard from 'components/SkeletonCard.vue'
 
-const { data, error, isError, isPending } = useQuery({
+const $q = useQuasar()
+
+const { data, error, isError, isSuccess, status } = useQuery({
   queryFn: getStatusQuery,
   queryKey: ['devices']
+})
+
+watch(status, status => {
+  console.log('status: ', status)
+  if (status === 'pending') {
+    $q.loading.show({
+      delay: 400 // ms
+    })
+  } else {
+    $q.loading.hide()
+  }
 })
 </script>
 

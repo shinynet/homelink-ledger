@@ -42,11 +42,23 @@
     <q-page-container>
       <router-view />
     </q-page-container>
+
+    <q-footer bordered>
+      <q-toolbar>
+        <q-toolbar-title>
+          <q-avatar>
+            <img :src="walletApi.icon" alt="Wallet Icon">
+          </q-avatar>
+          <div>{{ walletApi.name }}</div>
+        </q-toolbar-title>
+      </q-toolbar>
+    </q-footer>
   </q-layout>
 </template>
 
 <script>
 import { defineComponent, ref } from 'vue'
+import { LocalStorage } from 'quasar'
 import EssentialLink from 'components/EssentialLink.vue'
 import WalletSelector from 'components/WalletSelector.vue'
 
@@ -62,6 +74,8 @@ const linksList = [
     link: '/playground'
   }
 ]
+
+const walletId = LocalStorage.getItem('wallet')
 
 export default defineComponent({
   name: 'MainLayout',
@@ -79,7 +93,8 @@ export default defineComponent({
       leftDrawerOpen,
       toggleLeftDrawer () {
         leftDrawerOpen.value = !leftDrawerOpen.value
-      }
+      },
+      walletApi: window.cardano[walletId]
     }
   }
 })
