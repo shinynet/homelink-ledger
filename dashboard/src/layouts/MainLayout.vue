@@ -25,14 +25,12 @@
       bordered
     >
       <q-list>
-        <q-item-label
-          header
-        >
+        <q-item-label header>
           Essential Links
         </q-item-label>
 
         <EssentialLink
-          v-for="link in essentialLinks"
+          v-for="link in navigation"
           :key="link.title"
           v-bind="link"
         />
@@ -56,13 +54,13 @@
   </q-layout>
 </template>
 
-<script>
-import { defineComponent, ref } from 'vue'
+<script setup>
+import { ref } from 'vue'
 import { LocalStorage } from 'quasar'
 import EssentialLink from 'components/EssentialLink.vue'
 import WalletSelector from 'components/WalletSelector.vue'
 
-const linksList = [
+const navigation = [
   {
     title: 'Dashboard',
     icon: 'grid_view',
@@ -76,26 +74,11 @@ const linksList = [
 ]
 
 const walletId = LocalStorage.getItem('wallet')
+const walletApi = window.cardano[walletId]
 
-export default defineComponent({
-  name: 'MainLayout',
+const leftDrawerOpen = ref(false)
 
-  components: {
-    WalletSelector,
-    EssentialLink
-  },
-
-  setup () {
-    const leftDrawerOpen = ref(false)
-
-    return {
-      essentialLinks: linksList,
-      leftDrawerOpen,
-      toggleLeftDrawer () {
-        leftDrawerOpen.value = !leftDrawerOpen.value
-      },
-      walletApi: window.cardano[walletId]
-    }
-  }
-})
+const toggleLeftDrawer = () => {
+  leftDrawerOpen.value = !leftDrawerOpen.value
+}
 </script>
