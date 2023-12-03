@@ -1,5 +1,6 @@
 <template>
   <q-select
+    v-if="showWalletSelector"
     filled
     dense
     emit-value
@@ -13,7 +14,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 import { useQuery } from '@tanstack/vue-query'
@@ -22,12 +23,14 @@ import { getWalletsQuery } from 'src/endpoints'
 const $q = useQuasar()
 const router = useRouter()
 
-const model = ref($q.localStorage.getItem('wallet'))
-
 const { data } = useQuery({
   queryFn: getWalletsQuery,
   queryKey: ['wallets']
 })
+
+const showWalletSelector = computed(() => data.value?.length > 1)
+
+const model = ref($q.localStorage.getItem('wallet'))
 
 watch(model, id => {
   $q.localStorage.set('wallet', id)

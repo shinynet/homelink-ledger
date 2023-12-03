@@ -13,9 +13,12 @@ const isAuthenticated = async () => {
       lucid.selectWallet(walletApi)
       return true
     } catch (error) {
+      console.log('error: ', error)
+      LocalStorage.remove('wallet')
       return false
     }
   }
+  LocalStorage.remove('wallet')
   return false
 }
 
@@ -31,7 +34,9 @@ const routes = [
       }
     ],
     beforeEnter: async () => {
-      return (await isAuthenticated() || { name: 'Login' })
+      const authenticated = await isAuthenticated()
+      console.log('authenticated: ', authenticated)
+      return (authenticated || { name: 'Login' })
       // TODO: Change to a global guard to prevent access
       //  to any route (except Login) if not authenticated
     }

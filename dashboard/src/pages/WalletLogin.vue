@@ -19,6 +19,7 @@
 </template>
 
 <script setup>
+// import { computed, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 import { useQuery } from '@tanstack/vue-query'
@@ -31,6 +32,19 @@ const { data } = useQuery({
   queryFn: getWalletsQuery,
   queryKey: ['wallets']
 })
+
+// const showWalletSelector = computed(() => data.value?.length > 1)
+// console.log('showWalletSelector: ', showWalletSelector)
+
+// watch(data, (newData) => {
+//   console.log('newData: ', newData.length)
+//   if (newData.length === 1) {
+//     const [wallet] = newData
+//     console.log('wallet: ', wallet)
+//     console.log('id: ', wallet.id)
+//     handleClick(wallet.id)
+//   }
+// })
 
 const handleClick = id => {
   $q.localStorage.set('wallet', id)

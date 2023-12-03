@@ -43,7 +43,6 @@ const { data, error, isError, isSuccess, status } = useQuery({
 })
 
 watch(status, status => {
-  console.log('status: ', status)
   if (status === 'pending') {
     $q.loading.show({
       delay: 400 // ms
