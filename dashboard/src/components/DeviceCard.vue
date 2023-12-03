@@ -1,5 +1,5 @@
 <template>
-  <q-card>
+  <q-card class="card">
     <q-card-section>
       <div class="text-h6">{{location}} {{name}}</div>
       <div class="text-subtitle2">{{location2}}</div>
@@ -8,33 +8,36 @@
     <q-card-section>
       {{ status }}
       <q-img
-        :src="statusImage"
-        class="status-image" />
+        :src="icon"
+        class="icon" />
     </q-card-section>
 
     <q-separator />
 
     <q-card-actions>
       <component
-        v-for="controlPair in ControlPairs"
-        :key="controlPair.CCIndex"
-        :is="controlPair.ControlType === 5 ? ControlTypeBinary : ControlTypeRange"
-        v-bind="controlPair"
+        v-for="{
+          CCIndex: ccIndex,
+          ControlType: controlType,
+          ControlValue: controlValue,
+          Label: label,
+          Range: range
+        } in controlPairs"
+        :key="ccIndex"
+        :is="controlComponent(controlType)"
+        :control-value="controlValue"
+        :label="label"
+        :range="range"
         :value="value"
         @change="handleDeviceChange"/>
-<!--      <control-type-button-->
-<!--        v-for="controlPair in ControlPairs"-->
-<!--        :key="controlPair.CCIndex"-->
-<!--        v-bind="controlPair"-->
-<!--        @change="handleDeviceChange"/>-->
     </q-card-actions>
   </q-card>
 </template>
 
 <script setup>
 import { computed } from 'vue'
-import { api } from 'boot/axios'
 import { useQueryClient, useMutation } from '@tanstack/vue-query'
+import { controlDeviceMutation } from 'src/endpoints'
 import ControlTypeBinary from 'components/ControlTypeBinary.vue'
 import ControlTypeRange from 'components/ControlTypeRange.vue'
 
@@ -43,7 +46,7 @@ defineOptions({
 })
 
 const props = defineProps({
-  ControlPairs: {
+  controlPairs: {
     type: Array,
     required: true
   },
@@ -67,7 +70,7 @@ const props = defineProps({
     type: String,
     required: true
   },
-  status_image: {
+  statusImage: {
     type: String,
     required: true
   },
@@ -76,34 +79,40 @@ const props = defineProps({
     required: true
   }
 })
-console.log('props: ', props)
-const statusImage = computed(() => {
-  const host = process.env.HS4_BASE_URL
-  const path = props.status_image
-  const user = process.env.HS4_USER
-  const pass = process.env.HS4_PASS
-
-  return `${host}${path}?user=${user}&pass=${pass}`
-})
 
 const queryClient = useQueryClient()
-
-const { mutate: mutateDevice } = useMutation({
-  mutationFn: ({ value }) => api.get('JSON', {
-    params: { request: 'controldevicebyvalue', value, ref: props.id }
-  }),
+const { mutate } = useMutation({
+  mutationFn: controlDeviceMutation,
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['devices'] })
   }
 })
 
+const icon = computed(() => {
+  const host = process.env.HS4_BASE_URL
+  const path = props.statusImage
+  const user = process.env.HS4_USER
+  const pass = process.env.HS4_PASS
+  return `${host}${path}?user=${user}&pass=${pass}`
+})
+
+const controlComponent = controlType => {
+  if (controlType === 5) return ControlTypeBinary
+  if (controlType === 7) return ControlTypeRange
+  return null
+}
+
 const handleDeviceChange = value => {
-  mutateDevice({ value })
+  mutate({ ref: props.id, value })
 }
 </script>
 
 <style scoped>
-.status-image {
+.card {
+  height: 300px;
+  width: 300px;
+}
+.icon {
   height: 50px;
   width: 50px;
 }

@@ -9,8 +9,8 @@
 // https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js
 
 const ESLintPlugin = require('eslint-webpack-plugin')
-
 const { configure } = require('quasar/wrappers')
+const path = require('node:path')
 
 module.exports = configure(function (ctx) {
   return {
@@ -78,6 +78,13 @@ module.exports = configure(function (ctx) {
       chainWebpack (chain) {
         chain.plugin('eslint-webpack-plugin')
           .use(ESLintPlugin, [{ extensions: ['js', 'vue'] }])
+      },
+
+      extendWebpack (cfg) {
+        cfg.resolve.alias = {
+          ...cfg.resolve.alias,
+          endpoints: path.resolve(__dirname, './src/endpoints')
+        }
       }
 
     },
