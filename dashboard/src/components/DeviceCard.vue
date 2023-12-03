@@ -1,20 +1,22 @@
 <template>
-  <q-card class="card">
-    <q-card-section>
-      <div class="text-h6">{{location}} {{name}}</div>
-      <div class="text-subtitle2">{{location2}}</div>
+  <q-card class="card no-box-shadow bg-grey-2">
+    <q-card-section class="q-pa-none no-wrap">
+      <h2 class="text-h6 q-pa-sm q-my-none text-white card-title">
+        {{location}} {{name}}
+        <span class="text-caption float-right">{{location2}}</span>
+      </h2>
     </q-card-section>
 
-    <q-card-section>
-      {{ status }}
-      <q-img
-        :src="icon"
-        class="icon" />
+    <q-card-section class="card-body">
+      <q-img :src="icon" class="status-icon" />
+      <caption class="text-uppercase text-accent text-weight-bolder text-subtitle1">
+        {{ status }}
+      </caption>
     </q-card-section>
 
-    <q-separator />
+    <q-separator inset />
 
-    <q-card-actions>
+    <q-card-actions class="card-actions">
       <component
         v-for="{
           CCIndex: ccIndex,
@@ -107,12 +109,26 @@ const handleDeviceChange = value => {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .card {
-  height: 300px;
-  width: 300px;
+  height: 250px;
+  width:  300px;
 }
-.icon {
+.card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-x-base;
+}
+.card-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+  grid-auto-flow: row;
+}
+.card-title {
+  background: linear-gradient(90deg, $primary 0%, $secondary 100%);
+}
+.status-icon {
   height: 50px;
   width: 50px;
 }

@@ -53,11 +53,12 @@ watch(status, status => {
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
+  gap: $space-base;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: repeat(auto-fit, 300px);
 }
 .error-banner {
   max-height: 50px;
