@@ -39,7 +39,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useQueryClient, useMutation } from '@tanstack/vue-query'
-import { controlDeviceMutation } from 'src/endpoints'
+import { updateDevice } from 'src/endpoints'
 import ControlTypeBinary from 'components/ControlTypeBinary.vue'
 import ControlTypeRange from 'components/ControlTypeRange.vue'
 
@@ -84,7 +84,7 @@ const props = defineProps({
 
 const queryClient = useQueryClient()
 const { mutate } = useMutation({
-  mutationFn: controlDeviceMutation,
+  mutationFn: updateDevice,
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['devices'] })
   }

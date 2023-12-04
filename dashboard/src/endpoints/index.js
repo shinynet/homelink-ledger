@@ -43,13 +43,9 @@ export const getWalletsQuery = () => Promise.resolve(window.cardano)
  *
  * @returns {Promise<Status>}
  */
-export const getStatusQuery = () => api.get('/devices')
+export const getDevices = () => api.get('/devices')
   .then(({ data }) => data.map(device => ({ ...device, id: device.ref })))
 
-export const controlDeviceMutation = ({ ref, value }) => api.get('JSON', {
-  params: {
-    request: 'controldevicebyvalue',
-    value,
-    ref
-  }
+export const updateDevice = ({ ref, value }) => api.patch(`/devices/${ref}`, {
+  value
 })
