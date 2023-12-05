@@ -33,6 +33,16 @@ app.get('/devices', (req, res) => {
     })
 })
 
+app.get('/status-image', (req, res) => {
+  const { path } = req.query
+  const reducer =  (imageData, byte) => imageData + String.fromCharCode(byte)
+  api.get(path, { responseType: 'arraybuffer' })
+    .then(({ data }) => {
+      const base64 = btoa(new Uint8Array(data).reduce(reducer, ''))
+      res.send(`data:;base64,${base64}`)
+    })
+})
+
 app.patch('/devices/:ref', (req, res) => {
   const { ref } = req.params
   const { value } = req.body
