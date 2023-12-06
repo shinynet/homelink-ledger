@@ -8,7 +8,7 @@
     </q-card-section>
 
     <q-card-section class="card-body">
-      <q-img :src="deviceStatusImage" class="status-icon" />
+      <q-img :src="statusImage" class="status-icon" />
       <caption class="text-uppercase text-accent text-weight-bolder text-subtitle1">
         {{ status }}
       </caption>
@@ -37,8 +37,6 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
-import { api } from 'boot/axios'
 import { useQueryClient, useMutation } from '@tanstack/vue-query'
 import { updateDevice } from 'src/endpoints'
 import ControlTypeBinary from 'components/ControlTypeBinary.vue'
@@ -96,16 +94,6 @@ const controlComponent = controlType => {
   if (controlType === 7) return ControlTypeRange
   return null
 }
-
-const deviceStatusImage = ref()
-
-watch(() => props.statusImage, path => {
-  api.get('/status-image', {
-    params: { path }
-  }).then(({ data }) => {
-    deviceStatusImage.value = data
-  })
-}, { immediate: true })
 
 const handleDeviceChange = value => {
   mutate({ ref: props.id, value })
