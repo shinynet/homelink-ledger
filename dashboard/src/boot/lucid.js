@@ -1,7 +1,13 @@
 import { boot } from 'quasar/wrappers'
-import { Lucid } from 'lucid-cardano'
+import { Blockfrost, Lucid } from 'lucid-cardano'
 
-const lucid = await Lucid.new()
+const lucid = await Lucid.new(
+  new Blockfrost(
+    'https://cardano-preview.blockfrost.io/api/v0',
+    process.env.BLOCKFROST_API_KEY
+  ),
+  'Preview'
+)
 
 export default boot(({ app }) => {
   app.config.globalProperties.$lucid = lucid
