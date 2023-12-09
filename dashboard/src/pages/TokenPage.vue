@@ -17,6 +17,7 @@ import { useQuery } from '@tanstack/vue-query'
 import { lucid } from 'boot/lucid'
 import { applyDoubleCborEncoding, applyParamsToScript, Constr, Data, fromText, getAddressDetails } from 'lucid-cardano'
 import blueprint from '../../../aiken/plutus.json'
+import metadata from '../../../aiken/sample.json'
 
 const { data: address, error, isError, isLoading } = useQuery({
   queryFn: () => lucid.wallet.address(),
@@ -59,6 +60,7 @@ watch([address, utxos], async ([newAddress, newUtxos]) => {
         { [assetName]: BigInt(1) },
         mintRedeemer
       )
+      .attachMetadata(202312091500, metadata)
       .addSigner(newAddress)
       .complete()
       .then(tx => tx.sign().complete())
