@@ -30,61 +30,42 @@ const { data: utxos } = useQuery({
 
 watch([address, utxos], async ([newAddress, newUtxos]) => {
   if (newAddress && newUtxos) {
-    // console.log('newAddress', newAddress)
-    // console.log('newUtxos', newUtxos)
-
     const token = blueprint.validators.find((v) =>
       v.title === 'lights.token'
     )
-    // console.log('blueprint', blueprint)
-    // console.log('token', token)
-
-    const tokenName = 'HomeLink Ledger'
-    // console.log('tokenName', tokenName)
 
     const owner = getAddressDetails(newAddress).paymentCredential.hash
-    // console.log('owner', owner)
 
-    const giftCard = applyParamsToScript(token.compiledCode,
+    const parameterizedScript = applyParamsToScript(token.compiledCode,
       [owner]
     )
-    // console.log('giftCard', giftCard)
 
     const policyId = lucid.utils.validatorToScriptHash({
       type: 'PlutusV2',
-      script: giftCard
+      script: parameterizedScript
     })
-    // console.log('policyId', policyId)
 
+    const tokenName = 'HomeLink Ledger'
     const assetName = `${policyId}${fromText(tokenName)}`
-    // console.log('assetName', assetName)
 
     const mintRedeemer = Data.to(new Constr(0, []))
-    // console.log('mintRedeemer', mintRedeemer)
 
-    const parameterizedGiftCard = { type: 'PlutusV2', script: applyDoubleCborEncoding(giftCard) }
-    // console.log('parameterizedGiftCard', parameterizedGiftCard)
+    const parameterizedMintingPolicy = { type: 'PlutusV2', script: applyDoubleCborEncoding(parameterizedScript) }
 
-    const tx = await lucid
+    lucid
       .newTx()
-      .attachMintingPolicy(parameterizedGiftCard)
+      .attachMintingPolicy(parameterizedMintingPolicy)
       .mintAssets(
         { [assetName]: BigInt(1) },
         mintRedeemer
       )
       .addSigner(newAddress)
       .complete()
-
-    console.log('tx', tx)
-
-    const txSigned = await tx.sign().complete()
-    console.log('txSigned', txSigned)
-
-    const txHash = await txSigned.submit()
-    console.log('txHash', txHash)
-
-    const success = await lucid.awaitTx(txHash)
-    console.log('success', success)
+      .then(tx => tx.sign().complete())
+      .then(txSigned => txSigned.submit())
+      .then(txHash => lucid.awaitTx(txHash))
+      .then(success => console.log('success', success))
+      .catch(err => console.log(`Transaction error occurred: ${JSON.stringify(err)}`))
   }
 })
 </script>
