@@ -1,26 +1,3 @@
-import { LocalStorage } from 'quasar'
-import { lucid } from 'boot/lucid'
-
-const isAuthenticated = async () => {
-  // TODO: validate wallet contains admin token
-  if (lucid.wallet) return true
-
-  const wallet = LocalStorage.getItem('wallet')
-
-  if (wallet) {
-    try {
-      const walletApi = await window.cardano[wallet].enable()
-      lucid.selectWallet(walletApi)
-      return true
-    } catch (error) {
-      LocalStorage.remove('wallet')
-      return false
-    }
-  }
-  LocalStorage.remove('wallet')
-  return false
-}
-
 const routes = [
   {
     path: '/',
@@ -31,13 +8,7 @@ const routes = [
         path: '',
         component: () => import('pages/DashboardPage.vue')
       }
-    ],
-    beforeEnter: async () => {
-      const authenticated = await isAuthenticated()
-      return (authenticated || { name: 'Login' })
-      // TODO: Change to a global guard to prevent access
-      //  to any route (except Login) if not authenticated
-    }
+    ]
   },
   {
     path: '/login',
