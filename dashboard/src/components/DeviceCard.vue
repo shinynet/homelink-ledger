@@ -1,20 +1,22 @@
 <template>
-  <q-card class="card">
-    <q-card-section>
-      <div class="text-h6">{{location}} {{name}}</div>
-      <div class="text-subtitle2">{{location2}}</div>
+  <q-card class="no-box-shadow bg-grey-2">
+    <q-card-section class="q-pa-none no-wrap">
+      <h2 class="text-h6 q-pa-sm q-my-none text-white card-title">
+        {{location}} {{name}}
+        <span class="text-caption float-right">{{location2}}</span>
+      </h2>
     </q-card-section>
 
-    <q-card-section>
-      {{ status }}
-      <q-img
-        :src="icon"
-        class="icon" />
+    <q-card-section class="card-body">
+      <q-img :src="statusImage" class="status-icon" />
+      <caption class="text-uppercase text-accent text-weight-bolder text-subtitle1">
+        {{ status }}
+      </caption>
     </q-card-section>
 
-    <q-separator />
+    <q-separator inset />
 
-    <q-card-actions>
+    <q-card-actions class="card-actions">
       <component
         v-for="{
           CCIndex: ccIndex,
@@ -35,9 +37,8 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
 import { useQueryClient, useMutation } from '@tanstack/vue-query'
-import { controlDeviceMutation } from 'src/endpoints'
+import { updateDevice } from 'src/endpoints'
 import ControlTypeBinary from 'components/ControlTypeBinary.vue'
 import ControlTypeRange from 'components/ControlTypeRange.vue'
 
@@ -82,18 +83,10 @@ const props = defineProps({
 
 const queryClient = useQueryClient()
 const { mutate } = useMutation({
-  mutationFn: controlDeviceMutation,
+  mutationFn: updateDevice,
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['devices'] })
   }
-})
-
-const icon = computed(() => {
-  const host = process.env.HS4_BASE_URL
-  const path = props.statusImage
-  const user = process.env.HS4_USER
-  const pass = process.env.HS4_PASS
-  return `${host}${path}?user=${user}&pass=${pass}`
 })
 
 const controlComponent = controlType => {
@@ -107,12 +100,22 @@ const handleDeviceChange = value => {
 }
 </script>
 
-<style scoped>
-.card {
-  height: 300px;
-  width: 300px;
+<style lang="scss" scoped>
+.card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-x-base;
 }
-.icon {
+.card-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+  grid-auto-flow: row;
+}
+.card-title {
+  background: linear-gradient(90deg, $primary 0%, $secondary 100%);
+}
+.status-icon {
   height: 50px;
   width: 50px;
 }

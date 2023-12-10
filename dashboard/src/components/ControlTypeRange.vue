@@ -1,14 +1,17 @@
 <template>
   <q-slider
-    v-model="model"
     :min="rangeStart"
     :max="rangeEnd"
     label
-    :label-value="labelValue"/>
+    :label-value="labelValue"
+    :markers="25"
+    class="slider q-px-lg"
+    :model-value="value"
+    @change="handleClick"/>
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
 
 defineOptions({
   inheritAttrs: false
@@ -34,15 +37,18 @@ const {
   RangeStatusSuffix: rangeStatusSuffix
 } = props.range
 
-const model = ref(props.value)
-
 const labelValue = computed(
   () => rangeStatusPrefix + props.value + rangeStatusSuffix
 )
 
-const handleClick = () => {
-  emit('change', model.value)
+const handleClick = value => {
+  emit('change', value)
 }
-
-watch(model, handleClick)
 </script>
+
+<style scoped>
+.slider {
+  grid-column: span 3;
+  grid-row-start: 2;
+}
+</style>
