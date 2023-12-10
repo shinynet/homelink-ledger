@@ -12,7 +12,7 @@
         />
 
         <q-toolbar-title>
-          HomeLink Ledger
+          <q-img src="logo.png" style="width: 180px; height: 75px"/>
         </q-toolbar-title>
 
         <wallet-selector/>
@@ -23,10 +23,11 @@
       v-model="leftDrawerOpen"
       show-if-above
       bordered
+      class="bg-grey-2"
     >
       <q-list>
         <q-item-label header>
-          Essential Links
+          Navigation
         </q-item-label>
 
         <EssentialLink
@@ -41,12 +42,13 @@
       <router-view />
     </q-page-container>
 
-    <q-footer bordered>
+    <q-footer class="bg-grey-3 text-dark">
       <q-toolbar>
+        <q-avatar>
+          <img :src="walletApi.icon" alt="Wallet Icon">
+        </q-avatar>
         <q-toolbar-title>
-          <q-avatar>
-            <img :src="walletApi.icon" alt="Wallet Icon">
-          </q-avatar>
+
           <div>{{ walletApi.name }}</div>
         </q-toolbar-title>
       </q-toolbar>
