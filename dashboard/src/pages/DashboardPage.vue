@@ -24,7 +24,8 @@
       :name="name"
       :status="status"
       :status-image="statusImage"
-      :value="value"/>
+      :value="value"
+      class="card"/>
   </q-page>
 </template>
 
@@ -57,8 +58,11 @@ watch(status, status => {
 .grid {
   gap: $space-base;
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: repeat(auto-fit, 250px);
   grid-template-columns: repeat(auto-fit, 300px);
+  @media (max-width: $breakpoint-xs-max) {
+    grid-template-columns: repeat(auto-fit, 100%);
+  }
 }
 .error-banner {
   max-height: 50px;

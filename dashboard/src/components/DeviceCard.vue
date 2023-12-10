@@ -1,5 +1,5 @@
 <template>
-  <q-card class="card no-box-shadow bg-grey-2">
+  <q-card class="no-box-shadow bg-grey-2">
     <q-card-section class="q-pa-none no-wrap">
       <h2 class="text-h6 q-pa-sm q-my-none text-white card-title">
         {{location}} {{name}}
@@ -110,10 +110,6 @@ const handleDeviceChange = value => {
 </script>
 
 <style lang="scss" scoped>
-.card {
-  height: 250px;
-  width:  300px;
-}
 .card-body {
   display: flex;
   flex-direction: column;
