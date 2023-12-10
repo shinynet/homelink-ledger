@@ -1,8 +1,9 @@
 const express = require('express')
 const cors = require('cors')
-const env = require('dotenv').config()
-const app = express()
 const axios = require('axios')
+require('dotenv').config()
+
+const app = express()
 
 const api = axios.create({
   baseURL: process.env.HS4_BASE_URL,
@@ -15,12 +16,12 @@ const api = axios.create({
 app.use(cors())
 app.use(express.json())
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
+app.get('/status', (req, res) => {
+  res.send('API Running')
 })
 
 app.get('/devices', (req, res) => {
-  const result = api.get('JSON', {
+  api.get('JSON', {
     params: {
       request: 'getstatus',
       everything: true,
@@ -28,8 +29,23 @@ app.get('/devices', (req, res) => {
     }
   })
     .then(({ data }) => {
-      console.log('Devices: ', data.Devices)
       res.json(data.Devices)
+    })
+})
+
+app.patch('/devices/:ref', (req, res) => {
+  const { ref } = req.params
+  const { value } = req.body
+  api.get('JSON', {
+    params: {
+      request: 'controldevicebyvalue',
+      value,
+      ref
+    }
+  })
+    .then(({ data }) => {
+      const [device] = data.Devices
+      res.json(device)
     })
 })
 

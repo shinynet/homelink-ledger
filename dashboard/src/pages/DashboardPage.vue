@@ -33,13 +33,13 @@
 import { watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { useQuery } from '@tanstack/vue-query'
-import { getStatusQuery } from 'src/endpoints'
+import { getDevices } from 'src/endpoints'
 import DeviceCard from 'components/DeviceCard.vue'
 
 const $q = useQuasar()
 
 const { data, error, isError, isSuccess, status } = useQuery({
-  queryFn: getStatusQuery,
+  queryFn: getDevices,
   queryKey: ['devices']
 })
 
