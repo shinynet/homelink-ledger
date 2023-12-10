@@ -1,6 +1,28 @@
 import { route } from 'quasar/wrappers'
 import { createRouter, createMemoryHistory, createWebHistory, createWebHashHistory } from 'vue-router'
 import routes from './routes'
+import { lucid } from 'boot/lucid'
+import { LocalStorage } from 'quasar'
+
+const isAuthenticated = async () => {
+  // TODO: validate wallet contains admin token
+  if (lucid.wallet) return true
+
+  const wallet = LocalStorage.getItem('wallet')
+
+  if (wallet) {
+    try {
+      const walletApi = await window.cardano[wallet].enable()
+      lucid.selectWallet(walletApi)
+      return true
+    } catch (error) {
+      LocalStorage.remove('wallet')
+      return false
+    }
+  }
+  LocalStorage.remove('wallet')
+  return false
+}
 
 /*
  * If not building with SSR mode, you can
@@ -24,6 +46,13 @@ export default route(function (/* { store, ssrContext } */) {
     // quasar.conf.js -> build -> vueRouterMode
     // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.MODE === 'ssr' ? void 0 : process.env.VUE_ROUTER_BASE)
+  })
+
+  Router.beforeEach(async to => {
+    if (to.name !== 'Login') {
+      const authenticated = await isAuthenticated()
+      return (authenticated || { name: 'Login' })
+    }
   })
 
   return Router

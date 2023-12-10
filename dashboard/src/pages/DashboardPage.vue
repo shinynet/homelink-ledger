@@ -24,7 +24,8 @@
       :name="name"
       :status="status"
       :status-image="statusImage"
-      :value="value"/>
+      :value="value"
+      class="card"/>
   </q-page>
 </template>
 
@@ -32,13 +33,13 @@
 import { watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { useQuery } from '@tanstack/vue-query'
-import { getStatusQuery } from 'src/endpoints'
+import { getDevices } from 'src/endpoints'
 import DeviceCard from 'components/DeviceCard.vue'
 
 const $q = useQuasar()
 
 const { data, error, isError, isSuccess, status } = useQuery({
-  queryFn: getStatusQuery,
+  queryFn: getDevices,
   queryKey: ['devices']
 })
 
@@ -53,11 +54,15 @@ watch(status, status => {
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
+  gap: $space-base;
+  display: grid;
+  grid-template-rows: repeat(auto-fit, 250px);
+  grid-template-columns: repeat(auto-fit, 300px);
+  @media (max-width: $breakpoint-xs-max) {
+    grid-template-columns: repeat(auto-fit, 100%);
+  }
 }
 .error-banner {
   max-height: 50px;
