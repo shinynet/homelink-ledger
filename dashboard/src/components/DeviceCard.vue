@@ -8,7 +8,7 @@
     </q-card-section>
 
     <q-card-section class="card-body">
-      <q-img :src="icon" class="status-icon" />
+      <q-img :src="statusImage" class="status-icon" />
       <caption class="text-uppercase text-accent text-weight-bolder text-subtitle1">
         {{ status }}
       </caption>
@@ -37,7 +37,6 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
 import { useQueryClient, useMutation } from '@tanstack/vue-query'
 import { updateDevice } from 'src/endpoints'
 import ControlTypeBinary from 'components/ControlTypeBinary.vue'
@@ -88,14 +87,6 @@ const { mutate } = useMutation({
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ['devices'] })
   }
-})
-
-const icon = computed(() => {
-  const host = process.env.HS4_BASE_URL
-  const path = props.statusImage
-  const user = process.env.HS4_USER
-  const pass = process.env.HS4_PASS
-  return `${host}${path}?user=${user}&pass=${pass}`
 })
 
 const controlComponent = controlType => {
