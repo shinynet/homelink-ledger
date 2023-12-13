@@ -1,0 +1,50 @@
+{
+  "preamble": {
+    "title": "homelink-ledger/aiken",
+    "description": "Aiken contracts for project 'homelink-ledger/aiken'",
+    "version": "0.0.0",
+    "plutusVersion": "v2",
+    "compiler": {
+      "name": "Aiken",
+      "version": "v1.0.20-alpha+49bd4ba"
+    },
+    "license": "Apache-2.0"
+  },
+  "validators": [
+    {
+      "title": "lights.token",
+      "redeemer": {
+        "title": "_redeemer",
+        "schema": {
+          "$ref": "#/definitions/Void"
+        }
+      },
+      "parameters": [
+        {
+          "title": "owner",
+          "schema": {
+            "$ref": "#/definitions/ByteArray"
+          }
+        }
+      ],
+      "compiledCode": "58710100003232323232322322253330063322323300100100322533300c00114a026464a66601866e3c00801452889980200200098078011bae300d0013758601260146014601460146014601460146014600a6012600a00200629309b2b1bae001230033754002ae6955cf2ab9f5742ae881",
+      "hash": "384fe6990591d1d9bfeece2be056b2a9b67b7ac8e9c17d316b8e6034"
+    }
+  ],
+  "definitions": {
+    "ByteArray": {
+      "dataType": "bytes"
+    },
+    "Void": {
+      "title": "Unit",
+      "description": "The nullary constructor.",
+      "anyOf": [
+        {
+          "dataType": "constructor",
+          "index": 0,
+          "fields": []
+        }
+      ]
+    }
+  }
+}
