@@ -32,6 +32,17 @@ const routes = [
       }
     ]
   },
+  {
+    path: '/token',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        name: 'Token',
+        path: '',
+        component: () => import('pages/TokenPage.vue')
+      }
+    ]
+  },
 
   // Always leave this as last one
   {

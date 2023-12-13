@@ -36,13 +36,12 @@
 import { useQueryClient, useQuery, useMutation } from '@tanstack/vue-query'
 import { api } from 'boot/axios'
 import { lucid } from 'boot/lucid'
+import { getDevices } from 'src/endpoints'
 
 const queryClient = useQueryClient()
 
 const { data: devices } = useQuery({
-  queryFn: () => api.get('JSON', {
-    params: { request: 'getstatus' }
-  }).then(({ data }) => data.Devices),
+  queryFn: getDevices,
   queryKey: ['devices']
 })
 
