@@ -41,6 +41,8 @@ watch([address, utxos], async ([newAddress, newUtxos]) => {
       [owner]
     )
 
+    const parameterizedMintingPolicy = { type: 'PlutusV2', script: applyDoubleCborEncoding(parameterizedScript) }
+
     const policyId = lucid.utils.validatorToScriptHash({
       type: 'PlutusV2',
       script: parameterizedScript
@@ -50,8 +52,6 @@ watch([address, utxos], async ([newAddress, newUtxos]) => {
     const assetName = `${policyId}${fromText(tokenName)}`
 
     const mintRedeemer = Data.to(new Constr(0, []))
-
-    const parameterizedMintingPolicy = { type: 'PlutusV2', script: applyDoubleCborEncoding(parameterizedScript) }
 
     lucid
       .newTx()
