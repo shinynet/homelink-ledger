@@ -12,6 +12,25 @@
   },
   "validators": [
     {
+      "title": "admin.token",
+      "redeemer": {
+        "title": "redeemer",
+        "schema": {
+          "$ref": "#/definitions/admin~1Action"
+        }
+      },
+      "parameters": [
+        {
+          "title": "params",
+          "schema": {
+            "$ref": "#/definitions/admin~1NFTParams"
+          }
+        }
+      ],
+      "compiledCode": "590256010000323232323232323232222325333007323253330093370e9000000899191919191919191919191919191919191919191929998108008a501325333022001132323232533302300f13253330243370e90000008a999812004098012400429404c0092001302201f14a04a66604666e1c00c0044cdc78010098a50375c60440046eb4c088004c090008528181200099199119299981099b874800800440084dd59813180f801980f80119198008008011129998118008a60103d87a800013232323253330243371e034004266e95200033028374c00297ae01330060060033756604a0066eb8c08c008c09c008c0940052f5bded8c0646600200200644a666044002297adef6c6013232323253330233371e911000021003133027337606ea4008dd3000998030030019bab3024003375c6044004604c0046048002646600200200e44a66604200229404c8c94ccc080cdd79806980f0010090a5113300400400130250023023001375660400026040002603e002603c002603a0046eb0c06c004c04c00ccc88c8cc00400400c894ccc06c00452809919299980d19b8f00200514a2266008008002603e0046eb8c074004dd6180c980d180d180d180d180d180d180d180d1809180098090078041180c800980b80098078061bae3015001301500230130013013002375c602200260120106eb8c03c004c01c00852818038009806180698028010a4c26cac64a66600e66e1d20000011533300a300500314985854ccc01ccdc3a40040022a666014600a0062930b0b1802801118029baa001230033754002ae6955ceaab9e5573eae815d0aba201",
+      "hash": "8d4bbca8a68520c62c8674be5a3436995182e099996a2046c9cf0063"
+    },
+    {
       "title": "lights.token",
       "redeemer": {
         "title": "_redeemer",
@@ -35,6 +54,9 @@
     "ByteArray": {
       "dataType": "bytes"
     },
+    "Int": {
+      "dataType": "integer"
+    },
     "Void": {
       "title": "Unit",
       "description": "The nullary constructor.",
@@ -43,6 +65,85 @@
           "dataType": "constructor",
           "index": 0,
           "fields": []
+        }
+      ]
+    },
+    "admin/Action": {
+      "title": "Action",
+      "anyOf": [
+        {
+          "title": "Mint",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": []
+        },
+        {
+          "title": "Burn",
+          "dataType": "constructor",
+          "index": 1,
+          "fields": []
+        }
+      ]
+    },
+    "admin/NFTParams": {
+      "title": "NFTParams",
+      "anyOf": [
+        {
+          "title": "NFTParams",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "pkh",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "utxo",
+              "$ref": "#/definitions/aiken~1transaction~1OutputReference"
+            },
+            {
+              "title": "token_name",
+              "$ref": "#/definitions/ByteArray"
+            }
+          ]
+        }
+      ]
+    },
+    "aiken/transaction/OutputReference": {
+      "title": "OutputReference",
+      "description": "An `OutputReference` is a unique reference to an output on-chain. The `output_index`\n corresponds to the position in the output list of the transaction (identified by its id)\n that produced that output",
+      "anyOf": [
+        {
+          "title": "OutputReference",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "transaction_id",
+              "$ref": "#/definitions/aiken~1transaction~1TransactionId"
+            },
+            {
+              "title": "output_index",
+              "$ref": "#/definitions/Int"
+            }
+          ]
+        }
+      ]
+    },
+    "aiken/transaction/TransactionId": {
+      "title": "TransactionId",
+      "description": "A unique transaction identifier, as the hash of a transaction body. Note that the transaction id\n isn't a direct hash of the `Transaction` as visible on-chain. Rather, they correspond to hash\n digests of transaction body as they are serialized on the network.",
+      "anyOf": [
+        {
+          "title": "TransactionId",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "hash",
+              "$ref": "#/definitions/ByteArray"
+            }
+          ]
         }
       ]
     }
