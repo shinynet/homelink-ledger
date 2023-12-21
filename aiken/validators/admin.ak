@@ -4,9 +4,7 @@ use aiken/constants.{
 }
 use aiken/dict
 use aiken/hash.{Blake2b_224, Hash}
-use aiken/interval
 use aiken/list
-// use aiken/string
 use aiken/transaction.{
   Input, OutputReference, ScriptContext, Transaction, TransactionId,
 } as tx
@@ -30,7 +28,7 @@ validator(params: NFTParams) {
       tx.Mint(policy_id) -> {
         let NFTParams { pkh, utxo, token_name } = params
 
-        // pattern match on the script context to get transaction and purpose
+        // pattern match on the script context to get transaction
         let ScriptContext { transaction, .. } = context
 
         let must_be_signed =
@@ -39,7 +37,7 @@ validator(params: NFTParams) {
         // pattern match on the transaction to get inputs and mint from transaction. inputs contains minted assets
         let Transaction { inputs, mint, .. } = transaction
 
-        // ensure that the utxo parameter equals one of the inputs in the transaction
+        // ensure transaction inputs contains utxo
         let hasUTxO =
           list.any(inputs, fn(input) { input.output_reference == utxo })
 
@@ -50,14 +48,12 @@ validator(params: NFTParams) {
             |> dict.to_list()
         is {
           [(asset_name, amount)] -> {
-            // ensure amount is equal to one and asset_name is equal to token_name
+            // ensure amount to be minted is equal to n and asset_name is equal to token_name
             let hasCorrectMintingTokenNameAndAmount =
               fn(n) { amount == n && asset_name == token_name }
 
             must_be_signed? && when redeemer is {
               Mint -> hasUTxO && hasCorrectMintingTokenNameAndAmount(1)
-
-              // ensure amount is equal to negative one and asset_name is equal to token_name
               Burn -> hasCorrectMintingTokenNameAndAmount(-1)
             }
           }
@@ -78,21 +74,17 @@ test token_mint_success() {
   let context =
     ScriptContext {
       purpose: tx.Mint(policy_id),
-      transaction: default_tx(minted),
+      transaction: default_tx(
+        minted,
+        inputs: [default_input()],
+        extra_signatories: [pkh],
+      ),
     }
   token(params, redeemer, context)
 }
 
 test token_mint_failure_pkh_mismatch() {
-  let utxo =
-    OutputReference {
-      transaction_id: TransactionId {
-        hash: #"0000000000000000000000000000000000000000000000000000000000000000",
-      },
-      output_index: 0,
-    }
-
-  let params = NFTParams { pkh, utxo, token_name }
+  let params = NFTParams { pkh, utxo: default_utxo(), token_name }
 
   let redeemer = Mint
 
@@ -100,27 +92,14 @@ test token_mint_failure_pkh_mismatch() {
 
   let pkh2 = #"00000000000000000000000000000000000000000000000000000001"
 
-  // mint: value.zero() |> value.to_minted_value(),
   let context =
     ScriptContext {
       purpose: tx.Mint(policy_id),
-      transaction: Transaction {
+      transaction: default_tx(
+        minted,
         inputs: [default_input()],
-        reference_inputs: [],
-        outputs: [],
-        fee: value.zero(),
-        // add minted value
-        mint: minted |> value.to_minted_value(),
-        certificates: [],
-        withdrawals: dict.new(),
-        validity_range: interval.everything(),
         extra_signatories: [pkh2],
-        redeemers: dict.new(),
-        datums: dict.new(),
-        id: TransactionId {
-          hash: #"0000000000000000000000000000000000000000000000000000000000000000",
-        },
-      },
+      ),
     }
   !token(params, redeemer, context)
 }
@@ -144,23 +123,7 @@ test token_mint_failure_utxo_mismatch() {
   let context =
     ScriptContext {
       purpose: tx.Mint(policy_id),
-      transaction: Transaction {
-        inputs: [input],
-        reference_inputs: [],
-        outputs: [],
-        fee: value.zero(),
-        // add minted value
-        mint: minted |> value.to_minted_value(),
-        certificates: [],
-        withdrawals: dict.new(),
-        validity_range: interval.everything(),
-        extra_signatories: [pkh],
-        redeemers: dict.new(),
-        datums: dict.new(),
-        id: TransactionId {
-          hash: #"0000000000000000000000000000000000000000000000000000000000000000",
-        },
-      },
+      transaction: default_tx(minted, inputs: [input], extra_signatories: [pkh]),
     }
   !token(params, redeemer, context)
 }
@@ -176,7 +139,11 @@ test token_mint_failure_token_name_mismatch() {
   let context =
     ScriptContext {
       purpose: tx.Mint(policy_id),
-      transaction: default_tx(minted),
+      transaction: default_tx(
+        minted,
+        inputs: [default_input()],
+        extra_signatories: [pkh],
+      ),
     }
   !token(params, redeemer, context)
 }
@@ -190,7 +157,11 @@ test token_mint_failure_non_mint_purpose() {
   let context =
     ScriptContext {
       purpose: tx.Spend(default_utxo()),
-      transaction: default_tx(minted),
+      transaction: default_tx(
+        minted,
+        inputs: [default_input()],
+        extra_signatories: [pkh],
+      ),
     }
 
   !token(params, redeemer, context)
@@ -206,15 +177,3 @@ test token_mint_failure_no_tokens_in_tx() {
 
   !token(params, redeemer, context)
 }
-// trace string.from_bytearray(action)
-
-// {
-// expect Some(_input) =
-//   list.find(inputs, fn(input) { input.output_reference == utxo_ref })
-// amount == 1 && asset_name == token_name
-//   }
-// Burn -> amount == -1 && asset_name == token_name
-// trace string.from_bytearray(transaction_id.hash)
-// trace string.from_int(output_index)
-// trace string.from_bytearray(pkh)
-// trace string.from_bytearray(token_name)

@@ -41,9 +41,14 @@ pub fn default_input() -> Input {
   Input { output: default_output(), output_reference: default_utxo() }
 }
 
-pub fn default_tx(minted: Value) -> Transaction {
+pub fn default_tx(
+  minted: Value,
+  inputs: List<Input>,
+  extra_signatories: List<Hash<Blake2b_224, VerificationKey>>,
+) -> Transaction {
+  // borrowed from: https://github.com/aiken-lang/stdlib/blob/main/lib/aiken/transaction.ak#L84
   Transaction {
-    inputs: [default_input()],
+    inputs,
     reference_inputs: [],
     outputs: [],
     fee: value.zero(),
@@ -52,7 +57,7 @@ pub fn default_tx(minted: Value) -> Transaction {
     certificates: [],
     withdrawals: dict.new(),
     validity_range: interval.everything(),
-    extra_signatories: [pkh],
+    extra_signatories,
     redeemers: dict.new(),
     datums: dict.new(),
     id: TransactionId {
