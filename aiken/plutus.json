@@ -12,6 +12,43 @@
   },
   "validators": [
     {
+      "title": "admin.token",
+      "redeemer": {
+        "title": "redeemer",
+        "schema": {
+          "$ref": "#/definitions/admin~1Action"
+        }
+      },
+      "parameters": [
+        {
+          "title": "pkh",
+          "schema": {
+            "$ref": "#/definitions/ByteArray"
+          }
+        },
+        {
+          "title": "tx_id",
+          "schema": {
+            "$ref": "#/definitions/ByteArray"
+          }
+        },
+        {
+          "title": "output_index",
+          "schema": {
+            "$ref": "#/definitions/Int"
+          }
+        },
+        {
+          "title": "token_name",
+          "schema": {
+            "$ref": "#/definitions/ByteArray"
+          }
+        }
+      ],
+      "compiledCode": "59026a0100003232323232323232322322322322322232533300e323253330103370e90000008991919191919191919191919191919191929998120008a501325333025001132323232533302601113253330273370e90000008a999813804098012400429404c0092001302501b14a04a66604c66e1c00c0044cdc780100e0a50375c604a0046eb4c094004c09c008528181380099199119299981219b874800800440084dd598149811001981100119198008008011129998130008a6103d87a800013232323253330273371e02c004266e9520003302b374c00297ae0133006006003375660500066eb8c098008c0a8008c0a00052f5bded8c0646600200200a44a66604a002297adef6c6013232323253330263371e91100002100313302a337606ea4008dd3000998030030019bab3027003375c604a0046052004604e002646600200201244a66604800229404c8c94ccc08ccdd7980798108010028a51133004004001302800230260013374a900019811000998111ba80164bd7019ba548000cc084dd480ba5eb80dd5981080098108009810000980f800980f0011bac301c00130140033322323300100100322533301c00114a026464a66603666e3c00801452889980200200098100011bae301e0013758603460366036603660366036603660366036602660026026012022460340026030002602000c6eb8c058004c03800852818070009809980a18060010a4c26cac64a66601c66e1d200000115333011300c00314985854ccc038cdc3a40040022a66602260180062930b0b18060011bae001375a0026eb8004dd7000918029baa001230033754002ae6955ceaab9e5573eae815d0aba201",
+      "hash": "fc7a736c651bff24987d8901ee47bbc82ea8b7f958736564723f45ee"
+    },
+    {
       "title": "lights.token",
       "redeemer": {
         "title": "_redeemer",
@@ -35,6 +72,9 @@
     "ByteArray": {
       "dataType": "bytes"
     },
+    "Int": {
+      "dataType": "integer"
+    },
     "Void": {
       "title": "Unit",
       "description": "The nullary constructor.",
@@ -42,6 +82,23 @@
         {
           "dataType": "constructor",
           "index": 0,
+          "fields": []
+        }
+      ]
+    },
+    "admin/Action": {
+      "title": "Action",
+      "anyOf": [
+        {
+          "title": "Mint",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": []
+        },
+        {
+          "title": "Burn",
+          "dataType": "constructor",
+          "index": 1,
           "fields": []
         }
       ]
