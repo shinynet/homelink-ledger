@@ -23,23 +23,6 @@
         class="select"
         :option-label="(item) => getLabel(item)"
         :option-value="(item) => item" />
-        <!-- :option-label="(item) => `${item.txHash} ${item.outputIndex}`" -->
-        <!-- option-label="txHash" -->
-        <!-- dense -->
-        <!-- emit-value -->
-      <!-- <q-input
-        filled
-        type="number"
-        v-model="age"
-        label="Your age *"
-        lazy-rules
-        :rules="[
-          val => val !== null && val !== '' || 'Please type your age',
-          val => val > 0 && val < 100 || 'Please type a real age'
-        ]"
-      /> -->
-
-      <!-- <q-toggle v-model="accept" label="I accept the license and terms" /> -->
 
       <div>
         <q-btn label="Submit" type="submit" color="primary"/>
@@ -50,7 +33,6 @@
 <script setup>
 import { useQuery } from '@tanstack/vue-query'
 import { lucid } from 'boot/lucid'
-// import { useQuasar } from 'quasar'
 import { ref } from 'vue'
 import { applyDoubleCborEncoding, applyParamsToScript, Constr, Data, fromText, fromUnit, getAddressDetails, toText } from 'lucid-cardano'
 import blueprint from '../../../aiken/plutus.json'
@@ -67,19 +49,15 @@ const { data: utxos, /* error, isError, */ isLoading: isLoadingUTxOs } = useQuer
   queryFn: () => lucid.wallet.getUtxos()
 })
 
-// const $q = useQuasar()
-
 const tokenName = ref(null)
 const utxo = ref(null)
 
 const getLabel = (utxo) => {
   return [...Object.entries(utxo.assets).map(([key, value]) => {
     if (key === 'lovelace') {
-      // console.log(`${value} ${key}`)
       return [`${value} ${key}`]
     } else {
       const { assetName } = fromUnit(key)
-      // console.log(`${value} ${toText(assetName)}`)
       return [`${value} ${toText(assetName)}`]
     }
   })]
@@ -133,41 +111,5 @@ const onSubmit = () => {
     .then(txHash => lucid.awaitTx(txHash))
     .then(success => console.log('success', success))
     .catch(err => console.log(`Transaction error occurred: ${JSON.stringify(err)}`))
-    // .catch(err => console.log(`Transaction error occurred: ${err}`))
-
-  // for (const asset in utxo.value.assets) {
-  //   if (asset !== 'lovelace') {
-  //     // const { assetName, label, name } = fromUnit(asset)
-  //     const { assetName } = fromUnit(asset)
-  //     // console.log(assetName)
-  //     console.log(toText(assetName))
-  //   }
-  //   // console.log('asset', asset)
-  //   // console.log(fromUnit(asset))
-  // }
-
-  // console.log('****', fromUnit(utxo.value.assets))
-  // if (accept.value !== true) {
-  //   $q.notify({
-  //     color: 'red-5',
-  //     textColor: 'white',
-  //     icon: 'warning',
-  //     message: 'You need to accept the license and terms first'
-  //   })
-  // }
-  // else {
-  // $q.notify({
-  //   color: 'green-4',
-  //   textColor: 'white',
-  //   icon: 'cloud_done',
-  //   message: 'Submitted'
-  // })
-  // }
 }
-
-// const onReset = () => {
-//   tokenName.value = null
-//   age.value = null
-//   accept.value = false
-// }
 </script>
