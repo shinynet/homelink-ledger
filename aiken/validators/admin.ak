@@ -1,6 +1,5 @@
 use aiken/constants.{
-  default_input, default_output, default_tx, default_utxo, pkh, policy_id,
-  token_name,
+  default_input, default_output, default_tx, pkh, policy_id, token_name,
 }
 use aiken/dict
 use aiken/hash.{Blake2b_224, Hash}
@@ -16,18 +15,15 @@ type Action {
   Burn
 }
 
-type NFTParams {
+validator(
   pkh: Hash<Blake2b_224, VerificationKey>,
-  utxo: OutputReference,
+  tx_id: ByteArray,
+  output_index: Int,
   token_name: ByteArray,
-}
-
-validator(params: NFTParams) {
+) {
   fn token(redeemer: Action, context: ScriptContext) -> Bool {
     when context.purpose is {
       tx.Mint(policy_id) -> {
-        let NFTParams { pkh, utxo, token_name } = params
-
         // pattern match on the script context to get transaction
         let ScriptContext { transaction, .. } = context
 
@@ -37,10 +33,13 @@ validator(params: NFTParams) {
         // pattern match on the transaction to get inputs and mint from transaction. inputs contains minted assets
         let Transaction { inputs, mint, .. } = transaction
 
+        let transaction_id = TransactionId { hash: tx_id }
+
+        let utxo = OutputReference { transaction_id, output_index }
+
         // ensure transaction inputs contains utxo
         let hasUTxO =
           list.any(inputs, fn(input) { input.output_reference == utxo })
-
         when
           mint
             |> value.from_minted_value
@@ -66,8 +65,6 @@ validator(params: NFTParams) {
 }
 
 test token_mint_success() {
-  let params = NFTParams { pkh, utxo: default_utxo(), token_name }
-
   let redeemer = Mint
 
   let minted = value.from_asset(policy_id, token_name, 1)
@@ -80,12 +77,16 @@ test token_mint_success() {
         extra_signatories: [pkh],
       ),
     }
-  token(params, redeemer, context)
+
+  let transaction_id =
+    #"0000000000000000000000000000000000000000000000000000000000000000"
+
+  let output_index = 0
+
+  token(pkh, transaction_id, output_index, token_name, redeemer, context)
 }
 
 test token_mint_failure_pkh_mismatch() {
-  let params = NFTParams { pkh, utxo: default_utxo(), token_name }
-
   let redeemer = Mint
 
   let minted = value.from_asset(policy_id, token_name, 1)
@@ -101,7 +102,13 @@ test token_mint_failure_pkh_mismatch() {
         extra_signatories: [pkh2],
       ),
     }
-  !token(params, redeemer, context)
+
+  let transaction_id =
+    #"0000000000000000000000000000000000000000000000000000000000000000"
+
+  let output_index = 0
+
+  !token(pkh, transaction_id, output_index, token_name, redeemer, context)
 }
 
 test token_mint_failure_utxo_mismatch() {
@@ -113,8 +120,6 @@ test token_mint_failure_utxo_mismatch() {
       output_index: 0,
     }
 
-  let params = NFTParams { pkh, utxo: default_utxo(), token_name }
-
   let input = Input { output: default_output(), output_reference: utxo2 }
 
   let redeemer = Mint
@@ -125,13 +130,17 @@ test token_mint_failure_utxo_mismatch() {
       purpose: tx.Mint(policy_id),
       transaction: default_tx(minted, inputs: [input], extra_signatories: [pkh]),
     }
-  !token(params, redeemer, context)
+
+  let transaction_id =
+    #"0000000000000000000000000000000000000000000000000000000000000000"
+
+  let output_index = 0
+
+  !token(pkh, transaction_id, output_index, token_name, redeemer, context)
 }
 
 test token_mint_failure_token_name_mismatch() {
   let token_name2 = "bleh"
-
-  let params = NFTParams { pkh, utxo: default_utxo(), token_name }
 
   let redeemer = Mint
 
@@ -145,18 +154,28 @@ test token_mint_failure_token_name_mismatch() {
         extra_signatories: [pkh],
       ),
     }
-  !token(params, redeemer, context)
+  let transaction_id =
+    #"0000000000000000000000000000000000000000000000000000000000000000"
+
+  let output_index = 0
+
+  !token(pkh, transaction_id, output_index, token_name, redeemer, context)
 }
 
 test token_mint_failure_non_mint_purpose() {
-  let params = NFTParams { pkh, utxo: default_utxo(), token_name }
-
   let redeemer = Mint
 
   let minted = value.from_asset(policy_id, token_name, 1)
   let context =
     ScriptContext {
-      purpose: tx.Spend(default_utxo()),
+      purpose: tx.Spend(
+        OutputReference {
+          transaction_id: TransactionId {
+            hash: #"0000000000000000000000000000000000000000000000000000000000000000",
+          },
+          output_index: 0,
+        },
+      ),
       transaction: default_tx(
         minted,
         inputs: [default_input()],
@@ -164,16 +183,24 @@ test token_mint_failure_non_mint_purpose() {
       ),
     }
 
-  !token(params, redeemer, context)
+  let transaction_id =
+    #"0000000000000000000000000000000000000000000000000000000000000000"
+
+  let output_index = 0
+
+  !token(pkh, transaction_id, output_index, token_name, redeemer, context)
 }
 
 test token_mint_failure_no_tokens_in_tx() {
-  let params = NFTParams { pkh, utxo: default_utxo(), token_name }
-
   let redeemer = Mint
 
   let context =
     ScriptContext { purpose: tx.Mint(policy_id), transaction: tx.placeholder() }
 
-  !token(params, redeemer, context)
+  let transaction_id =
+    #"0000000000000000000000000000000000000000000000000000000000000000"
+
+  let output_index = 0
+
+  !token(pkh, transaction_id, output_index, token_name, redeemer, context)
 }

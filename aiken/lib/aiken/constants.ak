@@ -16,15 +16,6 @@ pub const policy_id: PolicyId = #"0000000000"
 
 pub const token_name: ByteArray = "blah blah token_name"
 
-pub fn default_utxo() -> OutputReference {
-  OutputReference {
-    transaction_id: TransactionId {
-      hash: #"0000000000000000000000000000000000000000000000000000000000000000",
-    },
-    output_index: 0,
-  }
-}
-
 pub fn default_output() -> Output {
   Output {
     address: Address {
@@ -38,7 +29,15 @@ pub fn default_output() -> Output {
 }
 
 pub fn default_input() -> Input {
-  Input { output: default_output(), output_reference: default_utxo() }
+  Input {
+    output: default_output(),
+    output_reference: OutputReference {
+      transaction_id: TransactionId {
+        hash: #"0000000000000000000000000000000000000000000000000000000000000000",
+      },
+      output_index: 0,
+    },
+  }
 }
 
 pub fn default_tx(
