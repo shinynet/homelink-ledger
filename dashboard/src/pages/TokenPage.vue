@@ -10,20 +10,18 @@
       <h2 class="text-h6">Address</h2>
       {{ address }}
       <h2 class="text-h6">PubKeyHash</h2>
-      {{ getAddressDetails(address).paymentCredential?.hash }}
+      {{ pkh }}
       <h3>Create admin token</h3>
-      <admin-form />
+      <admin-form :pkh=pkh />
     </div>
   </q-page>
 </template>
 
 <script setup>
-// import { watch } from 'vue'
-// import { computed } from 'vue'
+import { ref, watch } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
 import { lucid } from 'boot/lucid'
 // import { applyDoubleCborEncoding, applyParamsToScript, Constr, Data, fromText, getAddressDetails } from 'lucid-cardano'
-import { getAddressDetails } from 'lucid-cardano'
 // import blueprint from '../../../aiken/plutus.json'
 // import metadata from '../../../aiken/sample.json'
 import AdminForm from 'components/AdminForm.vue'
@@ -33,7 +31,13 @@ const { data: address, error, isError, isLoading } = useQuery({
   queryKey: ['address']
 })
 
-// const showAdminMint = computed(() => getAddressDetails(address).paymentCredential?.hash === process.env.PKH)
+const pkh = ref('')
+
+watch([address], async ([newAddress]) => {
+  if (newAddress) {
+    pkh.value = newAddress
+  }
+})
 
 // const { data: utxos } = useQuery({
 //   queryKey: ['utxos'],
