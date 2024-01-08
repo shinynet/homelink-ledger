@@ -1,88 +1,108 @@
 <template>
   <q-page padding>
-    <!-- {{ showAdminMint }} -->
     <q-banner v-if="isError" class="error-banner text-white bg-red">
       {{error.message}}
     </q-banner>
-
-    <div v-else-if="isLoading">Loading address...</div>
-    <div v-else-if="address">
-      <h2 class="text-h6">Address</h2>
-      {{ address }}
-      <h2 class="text-h6">PubKeyHash</h2>
-      {{ pkh }}
-      <h3>Create admin token</h3>
-      <admin-form :pkh=pkh />
+    <div v-if="isAdmin && utxos">
+      <h3>Create admin nft</h3>
+      <admin-form :address=address :pkh=pkh :utxos=utxos />
+    </div>
+    <div v-if="isAdmin">
+      <lights-form :address=address :pkh=pkh />
     </div>
   </q-page>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
 import { lucid } from 'boot/lucid'
-// import { applyDoubleCborEncoding, applyParamsToScript, Constr, Data, fromText, getAddressDetails } from 'lucid-cardano'
-// import blueprint from '../../../aiken/plutus.json'
-// import metadata from '../../../aiken/sample.json'
+import { applyParamsToScript, fromText, fromUnit, getAddressDetails } from 'lucid-cardano'
+// import { applyDoubleCborEncoding, applyParamsToScript, Constr, Data, fromText } from 'lucid-cardano'
 import AdminForm from 'components/AdminForm.vue'
+import LightsForm from 'components/LightsForm.vue'
+import blueprint from '../../../aiken/plutus.json'
 
-const { data: address, error, isError, isLoading } = useQuery({
+const { data: address, error, isError } = useQuery({
   queryFn: () => lucid.wallet.address(),
   queryKey: ['address']
 })
 
-const pkh = ref('')
-
-watch([address], async ([newAddress]) => {
-  if (newAddress) {
-    pkh.value = newAddress
-  }
+const { data: utxos } = useQuery({
+  queryKey: ['utxos'],
+  queryFn: () => lucid.wallet.getUtxos()
 })
 
-// const { data: utxos } = useQuery({
-//   queryKey: ['utxos'],
-//   queryFn: () => lucid.wallet.getUtxos()
-// })
+const pkh = ref('')
+const nftParams = ref([])
 
-// watch([address, utxos], async ([newAddress, newUtxos]) => {
-//   if (newAddress && newUtxos) {
-//     const token = blueprint.validators.find((v) =>
-//       v.title === 'lights.token'
-//     )
+const token = blueprint.validators.find((v) =>
+  v.title === 'lights.token'
+)
 
-//     const owner = getAddressDetails(newAddress).paymentCredential.hash
+const nft = blueprint.validators.find((v) =>
+  v.title === 'admin.token'
+)
 
-//     const parameterizedScript = applyParamsToScript(token.compiledCode,
-//       [owner]
-//     )
+watch([address, utxos], ([newAddress, newUtxos]) => {
+  // console.log('address', address)
+  // console.log('newAddress', newAddress)
 
-//     const parameterizedMintingPolicy = { type: 'PlutusV2', script: applyDoubleCborEncoding(parameterizedScript) }
+  if (newAddress && newUtxos) {
+    pkh.value = getAddressDetails(newAddress).paymentCredential.hash
+    nftParams.value = [
+      pkh.value,
+      '94b2e5b0e8c749104cd58ca775f0df6950fbc431f7dab415471f532c3c8abe4a', // we'll have to figure out how to retrieve the txHash
+      BigInt(0), // we'll have to figure out how to retrieve the output index
+      fromText('HomeLink Ledger Admin')
+    ]
 
-//     const policyId = lucid.utils.validatorToScriptHash({
-//       type: 'PlutusV2',
-//       script: parameterizedScript
-//     })
+    const tokenPolicyId = getPolicyId(token, [pkh.value])
+    const nftPolicyId = getPolicyId(nft, nftParams.value)
 
-//     const tokenName = 'HomeLink Ledger'
-//     const assetName = `${policyId}${fromText(tokenName)}`
+    console.log('devices token policy id', tokenPolicyId)
+    console.log('admin nft policy id', nftPolicyId)
 
-//     const mintRedeemer = Data.to(new Constr(0, []))
+    const adminPolicyMatches = newUtxos.flatMap((utxo) =>
+      Object.entries(utxo.assets).map(([key]) => {
+        if (key === 'lovelace') {
+          return false
+        } else {
+          const { policyId } = fromUnit(key)
+          return policyId === nftPolicyId
+        }
+      })
+    )
 
-//     lucid
-//       .newTx()
-//       .attachMintingPolicy(parameterizedMintingPolicy)
-//       .mintAssets(
-//         { [assetName]: BigInt(1) },
-//         mintRedeemer
-//       )
-//       .attachMetadata(202312091500, metadata)
-//       .addSigner(newAddress)
-//       .complete()
-//       .then(tx => tx.sign().complete())
-//       .then(txSigned => txSigned.submit())
-//       .then(txHash => lucid.awaitTx(txHash))
-//       .then(success => console.log('success', success))
-//       .catch(err => console.log(`Transaction error occurred: ${JSON.stringify(err)}`))
-//   }
-// })
+    const devicePolicyMatches = newUtxos.flatMap((utxo) =>
+      Object.entries(utxo.assets).map(([key]) => {
+        if (key === 'lovelace') {
+          return false
+        } else {
+          const { policyId } = fromUnit(key)
+          return policyId === tokenPolicyId
+        }
+      })
+    )
+
+    console.log('wallet contains admin nft', adminPolicyMatches.includes(true))
+    console.log('wallet contains device token(s)', devicePolicyMatches.includes(true))
+
+    // console.log('policyIdMatches', policyIdMatches)
+  }
+}, { immediate: true })
+
+const isAdmin = computed(() => pkh.value === process.env.PKH)
+
+const getPolicyId = (token, params) => {
+  const parameterizedScript = applyParamsToScript(token.compiledCode,
+    params
+  )
+
+  return lucid.utils.validatorToScriptHash({
+    type: 'PlutusV2',
+    script: parameterizedScript
+  })
+}
+
 </script>
