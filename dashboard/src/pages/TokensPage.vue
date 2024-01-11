@@ -1,5 +1,20 @@
 <template>
   <q-page padding>
+
+      <q-tabs
+        v-model="tab"
+        dense
+        class="text-grey"
+        active-color="primary"
+        indicator-color="primary"
+        align="justify"
+        narrow-indicator>
+        <q-route-tab name="mails" label="Mint Tokens" to="/tokens/mint" />
+        <q-route-tab name="alarms" label="Burn Tokens" to="/tokens/burn" />
+      </q-tabs>
+
+    <router-view />
+
     <q-banner v-if="isError" class="error-banner text-white bg-red">
       {{error.message}}
     </q-banner>
@@ -18,20 +33,24 @@ import { computed, ref, watch } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
 import { lucid } from 'boot/lucid'
 import { applyParamsToScript, fromText, fromUnit, getAddressDetails } from 'lucid-cardano'
-// import { applyDoubleCborEncoding, applyParamsToScript, Constr, Data, fromText } from 'lucid-cardano'
 import AdminForm from 'components/AdminForm.vue'
 import LightsForm from 'components/LightsForm.vue'
 import blueprint from '../../../aiken/plutus.json'
+import { getWalletAddress, getWalletUtxos } from 'src/endpoints'
+
+defineOptions({ name: 'tokens-page' })
 
 const { data: address, error, isError } = useQuery({
-  queryFn: () => lucid.wallet.address(),
+  queryFn: getWalletAddress,
   queryKey: ['address']
 })
 
 const { data: utxos } = useQuery({
   queryKey: ['utxos'],
-  queryFn: () => lucid.wallet.getUtxos()
+  queryFn: () => getWalletUtxos()
 })
+
+const tab = ref()
 
 const pkh = ref('')
 const nftParams = ref([])
@@ -43,6 +62,15 @@ const token = blueprint.validators.find((v) =>
 const nft = blueprint.validators.find((v) =>
   v.title === 'admin.token'
 )
+
+const getPolicyId = (token, params) => {
+  const parameterizedScript = applyParamsToScript(token.compiledCode, params)
+
+  return lucid.utils.validatorToScriptHash({
+    type: 'PlutusV2',
+    script: parameterizedScript
+  })
+}
 
 watch([address, utxos], ([newAddress, newUtxos]) => {
   // console.log('address', address)
@@ -93,16 +121,5 @@ watch([address, utxos], ([newAddress, newUtxos]) => {
 }, { immediate: true })
 
 const isAdmin = computed(() => pkh.value === process.env.PKH)
-
-const getPolicyId = (token, params) => {
-  const parameterizedScript = applyParamsToScript(token.compiledCode,
-    params
-  )
-
-  return lucid.utils.validatorToScriptHash({
-    type: 'PlutusV2',
-    script: parameterizedScript
-  })
-}
 
 </script>

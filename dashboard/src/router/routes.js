@@ -33,13 +33,25 @@ const routes = [
     ]
   },
   {
-    path: '/token',
+    path: '/tokens',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       {
-        name: 'Token',
+        name: 'Tokens',
         path: '',
-        component: () => import('pages/TokenPage.vue')
+        component: () => import('pages/TokensPage.vue'),
+        children: [
+          {
+            name: 'TokenMinting',
+            path: 'mint',
+            component: () => import('components/TokenMinting.vue')
+          },
+          {
+            name: 'TokenBurning',
+            path: 'burn',
+            component: () => import('components/TokenBurning.vue')
+          }
+        ]
       }
     ]
   },

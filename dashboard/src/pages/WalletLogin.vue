@@ -23,13 +23,13 @@
 import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 import { useQuery } from '@tanstack/vue-query'
-import { getWalletsQuery } from 'src/endpoints'
+import { getWallets } from 'src/endpoints'
 
 const $q = useQuasar()
 const router = useRouter()
 
 const { data } = useQuery({
-  queryFn: getWalletsQuery,
+  queryFn: getWallets,
   queryKey: ['wallets']
 })
 

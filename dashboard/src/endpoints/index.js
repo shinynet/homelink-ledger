@@ -1,4 +1,5 @@
 import { api } from 'boot/axios'
+import { lucid } from 'boot/lucid'
 
 /**
  * @typedef {Object} Range
@@ -34,18 +35,14 @@ import { api } from 'boot/axios'
  * @property {Device[]} Devices
  */
 
-export const getWalletsQuery = () => Promise.resolve(window.cardano)
+export const getWallets = () => Promise.resolve(window.cardano)
   .then(data => Object.entries(data))
   .then(entries => entries.filter(([key]) => ['lace', 'eternl', 'nami'].includes(key)))
   .then(data => data.map(([key, value]) => ({ id: key, ...value })))
-
-/**
- *
- * @returns {Promise<Status>}
- */
+export const getWalletAddress = () => lucid.wallet.address()
+export const getWalletUtxos = () => lucid.wallet.getUtxos()
 export const getDevices = () => api.get('/devices')
   .then(({ data }) => data.map(device => ({ ...device, id: device.ref })))
-
 export const updateDevice = ({ ref, value }) => api.patch(`/devices/${ref}`, {
   value
 })
