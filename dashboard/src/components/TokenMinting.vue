@@ -4,7 +4,7 @@
     <q-item
       tag="label"
       v-ripple
-      v-for="{location, location2, name, ref} in devices"
+      v-for="{location, location2, name, ref} in deviceQuery"
       :key="ref">
       <q-item-section side top>
         <q-checkbox
@@ -26,22 +26,45 @@
         <q-item-label>Admin</q-item-label>
       </q-item-section>
     </q-item>
-  </q-list>
 
-  <div class="q-px-sm">
-    The model data: <strong>{{ selectedTokens }}</strong>
-  </div>
+    <q-item>
+      <q-btn
+        label="Mint"
+        color="primary"
+        :disabled="isFormInValid"
+        style="width: 200px"
+        @click="handleSubmit"/>
+    </q-item>
+  </q-list>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
 import { getDevices } from 'src/endpoints'
+import { useMintToken } from 'src/composables/mintToken'
 
-const { data: devices } = useQuery({
+const mint = useMintToken()
+
+const { data: deviceQuery } = useQuery({
   queryFn: getDevices,
   queryKey: ['devices']
 })
 
 const selectedTokens = ref([])
+
+const isFormInValid = computed(
+  () => selectedTokens.value.length === 0
+)
+
+const handleSubmit = async () => {
+  const devices = deviceQuery.value.filter(
+    d => selectedTokens.value.includes(d.ref)
+  )
+  const deviceList = selectedTokens.value.includes(0)
+    ? [...devices, { location: '', name: 'Admin', ref: 0 }]
+    : devices
+
+  await mint(deviceList)
+}
 </script>
