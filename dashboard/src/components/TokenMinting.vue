@@ -44,6 +44,8 @@ import { useQuery } from '@tanstack/vue-query'
 import { getDevices } from 'src/endpoints'
 import { useMintToken } from 'src/composables/mintToken'
 
+defineOptions({ name: 'token-minting' })
+
 const mint = useMintToken()
 
 const { data: deviceQuery } = useQuery({

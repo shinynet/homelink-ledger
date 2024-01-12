@@ -5,7 +5,7 @@ import blueprint from '../../../aiken/plutus.json'
 import metadata from '../../../aiken/sample.json'
 
 export const useMintToken = () => {
-  return async deviceList => {
+  return async (deviceList, amount = 1) => {
     const devices = toValue(deviceList)
 
     const address = await lucid.wallet.address()
@@ -37,7 +37,7 @@ export const useMintToken = () => {
       const deviceName = `${d.location} ${d.name}`
       const assetName = `${policyId}${fromText(deviceName)}`
       return {
-        [assetName]: BigInt(1)
+        [assetName]: BigInt(amount)
       }
     })
 
