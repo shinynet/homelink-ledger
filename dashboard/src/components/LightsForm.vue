@@ -1,8 +1,10 @@
 <template>
+  <h3>{{ actionText }} device token</h3>
   <q-form
       @submit="onSubmit"
       class="q-gutter-md"
     >
+    <div>
       <q-input
         filled
         v-model="tokenName"
@@ -10,17 +12,16 @@
         lazy-rules
         :rules="[ val => val && val.length > 0 || 'Please type something']"
       />
-
-      <q-select
-        filled
-        bg-color="white"
-        v-model="utxo"
-        :options="props.utxos"
-        label="Payment UTxO"
-        class="select"
-        :option-label="(item) => getLabel(item)"
-        :option-value="(item) => item" />
-
+    </div>
+    <div>
+      <q-toggle
+        v-model="action"
+        checked-icon="local_fire_department"
+        color="red"
+        label="Burn token"
+        unchecked-icon="token"
+      />
+    </div>
       <div>
         <q-btn label="Submit" type="submit" color="primary"/>
       </div>
@@ -29,9 +30,10 @@
 
 <script setup>
 import { lucid } from 'boot/lucid'
-import { ref } from 'vue'
-import { applyDoubleCborEncoding, applyParamsToScript, Constr, Data, fromText, fromUnit, toText } from 'lucid-cardano'
+import { computed, ref } from 'vue'
+import { applyDoubleCborEncoding, applyParamsToScript, Constr, Data, fromText } from 'lucid-cardano'
 import blueprint from '../../../aiken/plutus.json'
+import metadata from '../../../aiken/sample.json'
 
 const props = defineProps({
   address: {
@@ -41,41 +43,29 @@ const props = defineProps({
   pkh: {
     type: String,
     required: true
-  },
-  utxos: {
-    type: Array,
-    required: true
   }
 })
 
 const tokenName = ref(null)
-const utxo = ref(null)
+const action = ref(false)
 
-const getLabel = (utxo) => {
-  return [...Object.entries(utxo.assets).map(([key, value]) => {
-    if (key === 'lovelace') {
-      return [`${value} ${key}`]
-    } else {
-      const { assetName } = fromUnit(key)
-      return [`${value} ${toText(assetName)}`]
-    }
-  })]
-}
+const actionText = computed(() => action.value === false ? 'Mint' : 'Burn')
+const amount = computed(() => action.value === false ? 1 : (-1))
 
 const onSubmit = () => {
   console.log('onSubmit called')
   console.log('tokenName.value', tokenName.value)
-  console.log('utxo.value', utxo.value)
   console.log('props.address', props.address)
+  console.log('action.value', action.value)
 
-  const nft = blueprint.validators.find((v) =>
-    v.title === 'admin.token'
+  const token = blueprint.validators.find((v) =>
+    v.title === 'lights.token'
   )
 
   console.log('props.pkh', props.pkh)
 
-  const parameterizedScript = applyParamsToScript(nft.compiledCode,
-    [props.pkh, utxo.value.txHash, BigInt(utxo.value.outputIndex), fromText(tokenName.value)]
+  const parameterizedScript = applyParamsToScript(token.compiledCode,
+    [props.pkh]
   )
 
   const parameterizedMintingPolicy = { type: 'PlutusV2', script: applyDoubleCborEncoding(parameterizedScript) }
@@ -98,10 +88,10 @@ const onSubmit = () => {
     .newTx()
     .attachMintingPolicy(parameterizedMintingPolicy)
     .mintAssets(
-      { [assetName]: BigInt(1) },
+      { [assetName]: BigInt(amount) },
       mintRedeemer
     )
-    // .attachMetadata(202312091500, metadata)
+    .attachMetadata(202312091500, metadata)
     .addSigner(props.address)
     .complete()
     .then(tx => tx.sign().complete())
