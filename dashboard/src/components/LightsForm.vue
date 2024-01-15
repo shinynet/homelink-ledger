@@ -31,7 +31,7 @@
 <script setup>
 import { lucid } from 'boot/lucid'
 import { computed, ref } from 'vue'
-import { applyDoubleCborEncoding, applyParamsToScript, Constr, Data, fromText } from 'lucid-cardano'
+import { applyDoubleCborEncoding, applyParamsToScript, Data, fromText } from 'lucid-cardano'
 import blueprint from '../../../aiken/plutus.json'
 import metadata from '../../../aiken/sample.json'
 
@@ -78,18 +78,15 @@ const onSubmit = () => {
   console.log('policyId', policyId)
   const assetName = `${policyId}${fromText(tokenName.value)}`
 
-  const mintRedeemer = Data.to(new Constr(0, []))
-
   console.log('parameterizedMintingPolicy', parameterizedMintingPolicy)
   console.log('assetName', assetName)
-  console.log('mintRedeemer', mintRedeemer)
 
   lucid
     .newTx()
     .attachMintingPolicy(parameterizedMintingPolicy)
     .mintAssets(
       { [assetName]: BigInt(amount) },
-      mintRedeemer
+      Data.void()
     )
     .attachMetadata(202312091500, metadata)
     .addSigner(props.address)
