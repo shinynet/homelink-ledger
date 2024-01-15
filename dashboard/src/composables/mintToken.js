@@ -1,18 +1,14 @@
 import { toValue } from 'vue'
 import { lucid } from 'boot/lucid'
-import { applyDoubleCborEncoding, applyParamsToScript, Constr, Data, fromText, getAddressDetails } from 'lucid-cardano'
+import { applyDoubleCborEncoding, applyParamsToScript, Data, fromText } from 'lucid-cardano'
 import blueprint from '../../../aiken/plutus.json'
 import metadata from '../../../aiken/sample.json'
 
 export const useMintToken = () => {
-  return async (deviceList, amount = 1) => {
+  return async (deviceList, key, amount = 1) => {
     const devices = toValue(deviceList)
 
     const address = await lucid.wallet.address()
-
-    const pubKeyHash = getAddressDetails(
-      address
-    ).paymentCredential.hash
 
     const token = blueprint.validators.find(
       v => v.title === 'lights.token'
@@ -20,7 +16,7 @@ export const useMintToken = () => {
 
     const parameterizedScript = applyParamsToScript(
       token.compiledCode,
-      [pubKeyHash]
+      [fromText(key)]
     )
 
     const parameterizedMintingPolicy = {
@@ -41,12 +37,10 @@ export const useMintToken = () => {
       }
     })
 
-    const mintRedeemer = Data.to(new Constr(0, []))
-
     lucid
       .newTx()
       .attachMintingPolicy(parameterizedMintingPolicy)
-      .mintAssets(Object.assign({}, ...assets), mintRedeemer)
+      .mintAssets(Object.assign({}, ...assets), Data.void())
       .attachMetadata(202312091500, metadata)
       .addSigner(address)
       .complete()
