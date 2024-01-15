@@ -1,33 +1,19 @@
-use aiken/hash.{Blake2b_224, Hash}
-use aiken/list
-use aiken/transaction.{
-  OutputReference, ScriptContext, Spend, Transaction, TransactionId,
-}
-use aiken/transaction/credential.{VerificationKey}
+use aiken/constants.{policy_id}
+use aiken/transaction.{ScriptContext} as tx
 
-validator(owner: Hash<Blake2b_224, VerificationKey>) {
-  fn token(_redeemer: Void, context: ScriptContext) -> Bool {
-    let must_be_signed = list.has(context.transaction.extra_signatories, owner)
-    must_be_signed?
+validator(_key: ByteArray) {
+  fn token(_redeemer: Void, _context: ScriptContext) -> Bool {
+    True
   }
 }
 
 test token_test_success() {
-  let owner = #"00000000000000000000000000000000000000000000000000000000"
+  let key = "8bcf424c-c913-46d1-9f71-1c636d7c5d1d"
 
   let redeemer = Void
 
-  let placeholder_utxo =
-    OutputReference { transaction_id: TransactionId(""), output_index: 0 }
-
   let context =
-    ScriptContext {
-      purpose: Spend(placeholder_utxo),
-      transaction: transaction.placeholder()
-        |> fn(transaction) {
-             Transaction { ..transaction, extra_signatories: [owner] }
-           },
-    }
+    ScriptContext { purpose: tx.Mint(policy_id), transaction: tx.placeholder() }
 
-  token(owner, redeemer, context)
+  token(key, redeemer, context)
 }
