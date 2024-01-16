@@ -5,7 +5,7 @@ import blueprint from '../../../aiken/plutus.json'
 import metadata from '../../../aiken/sample.json'
 
 export const useMintToken = () => {
-  return async (deviceList, key, amount = 1) => {
+  return async (deviceList, amount = 1) => {
     const devices = toValue(deviceList)
 
     const address = await lucid.wallet.address()
@@ -16,7 +16,7 @@ export const useMintToken = () => {
 
     const parameterizedScript = applyParamsToScript(
       token.compiledCode,
-      [fromText(key)]
+      [fromText(process.env.KEY)]
     )
 
     const parameterizedMintingPolicy = {
