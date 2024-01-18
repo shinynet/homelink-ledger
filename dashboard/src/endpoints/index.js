@@ -1,5 +1,7 @@
 import { api } from 'boot/axios'
 import { lucid } from 'boot/lucid'
+import { getPolicyIdAssets } from 'src/utils/wallet'
+import { getPolicyId } from 'src/utils/contract'
 
 /**
  * @typedef {Object} Range
@@ -46,3 +48,5 @@ export const getDevices = () => api.get('/devices')
 export const updateDevice = ({ ref, value }) => api.patch(`/devices/${ref}`, {
   value
 })
+
+export const getTokens = () => getPolicyIdAssets(getPolicyId(process.env.KEY))

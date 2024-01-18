@@ -1,11 +1,11 @@
 <template>
   <q-page padding class="grid">
-    <q-banner v-if="isError" class="error-banner text-white bg-red">
-      {{error.message}}
+    <q-banner v-if="isDevicesError" class="error-banner text-white bg-red">
+      {{devicesError.message}}
     </q-banner>
 
     <device-card
-      v-else-if="isSuccess"
+      v-else-if="isDevicesSuccess"
       v-for="{
         ref,
         ControlPairs: controlPairs,
@@ -15,7 +15,7 @@
         status,
         status_image: statusImage,
         value
-      } in data"
+      } in filteredDevices"
       :key="ref"
       :control-pairs="controlPairs"
       :id="ref"
@@ -30,20 +30,41 @@
 </template>
 
 <script setup>
-import { watch } from 'vue'
+import { computed, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { useQuery } from '@tanstack/vue-query'
-import { getDevices } from 'src/endpoints'
+import { getTokens, getDevices } from 'src/endpoints'
 import DeviceCard from 'components/DeviceCard.vue'
 
 const $q = useQuasar()
 
-const { data, error, isError, isSuccess, status } = useQuery({
-  queryFn: getDevices,
-  queryKey: ['devices']
+const { data: tokens, isSuccess: tokensIsSuccess } = useQuery({
+  queryFn: getTokens,
+  queryKey: ['tokens']
 })
 
-watch(status, status => {
+const tokenNameList = computed(() =>
+  tokens.value?.map(({ assetName }) => assetName)
+)
+
+const {
+  data: devices,
+  error: devicesError,
+  isError: isDevicesError,
+  isSuccess: isDevicesSuccess,
+  status: devicesStatus
+} = useQuery({
+  queryFn: getDevices,
+  queryKey: ['devices'],
+  enabled: tokensIsSuccess
+})
+
+const filteredDevices = computed(() =>
+  devices.value?.filter(({ name, location }) =>
+    tokenNameList.value.includes(`${location} ${name}`))
+)
+
+watch(devicesStatus, status => {
   if (status === 'pending') {
     $q.loading.show({
       delay: 400 // ms

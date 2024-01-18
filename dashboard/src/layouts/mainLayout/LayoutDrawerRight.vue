@@ -9,7 +9,7 @@
       :horizontal-thumb-style="{ opacity: 0 }">
       <q-list padding>
         <q-item
-          v-for="{assetName, unit, quantity} in assets"
+          v-for="{assetName, unit, quantity} in tokens"
           :key="unit"
           dense>
           <q-btn
@@ -30,18 +30,14 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
-import { getPolicyIdAssets } from 'src/utils/wallet'
-import { getPolicyId } from 'src/utils/contract'
+import { useQuery } from '@tanstack/vue-query'
+import { getTokens } from 'src/endpoints'
 
-const assets = ref([])
+const { data: tokens } = useQuery({
+  queryFn: getTokens,
+  queryKey: ['tokens']
+})
 
 defineOptions({ name: 'layout-drawer-right' })
 
-onMounted(
-  () => getPolicyIdAssets(getPolicyId(process.env.KEY))
-    .then(result => {
-      assets.value = result
-    })
-)
 </script>

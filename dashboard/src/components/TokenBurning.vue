@@ -1,11 +1,5 @@
 <template>
-  <q-list bordered padding>
-    <q-input
-        v-model="key"
-        label="Key *"
-        lazy-rules
-        :rules="[ val => val && val.length > 0 || 'Please type something']"
-      />
+  <q-list padding>
     <q-item-label header>Devices</q-item-label>
     <q-item
       tag="label"
@@ -23,6 +17,8 @@
       </q-item-section>
     </q-item>
 
+    <q-separator spaced/>
+
     <q-item-label header>Admin Token</q-item-label>
     <q-item tag="label" v-ripple>
       <q-item-section side top>
@@ -32,6 +28,21 @@
         <q-item-label>Admin</q-item-label>
       </q-item-section>
     </q-item>
+
+    <q-separator spaced/>
+
+    <q-expansion-item
+      icon="settings"
+      label="Settings">
+      <q-card>
+        <q-card-section>
+          <q-input
+            dense
+            v-model="key"
+            label="License Key"/>
+        </q-card-section>
+      </q-card>
+    </q-expansion-item>
 
     <q-item>
       <q-btn
@@ -46,11 +57,15 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { useQuery } from '@tanstack/vue-query'
+import { useQuasar } from 'quasar'
+import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { getDevices } from 'src/endpoints'
 import { useMintToken } from 'src/composables/mintToken'
 
-defineOptions({ name: 'token-burning' })
+const { loading } = useQuasar()
+const queryClient = useQueryClient()
+
+defineOptions({ name: 'token-minting' })
 
 const mint = useMintToken()
 
@@ -66,7 +81,18 @@ const isFormInValid = computed(
   () => selectedTokens.value.length === 0
 )
 
+const resetForm = () => {
+  selectedTokens.value = []
+  key.value = process.env.KEY
+}
+
+const invalidateQueries = async () => {
+  await queryClient.invalidateQueries({ queryKey: ['devices'] })
+  await queryClient.invalidateQueries({ queryKey: ['tokens'] })
+}
+
 const handleSubmit = async () => {
+  loading.show()
   const devices = deviceQuery.value.filter(
     d => selectedTokens.value.includes(d.ref)
   )
@@ -75,5 +101,10 @@ const handleSubmit = async () => {
     : devices
 
   await mint(deviceList, key, -1)
+  console.log('done')
+
+  resetForm()
+  await invalidateQueries()
+  loading.hide()
 }
 </script>
