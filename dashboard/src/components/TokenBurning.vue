@@ -1,5 +1,11 @@
 <template>
   <q-list bordered padding>
+    <q-input
+        v-model="key"
+        label="Key *"
+        lazy-rules
+        :rules="[ val => val && val.length > 0 || 'Please type something']"
+      />
     <q-item-label header>Devices</q-item-label>
     <q-item
       tag="label"
@@ -54,6 +60,7 @@ const { data: deviceQuery } = useQuery({
 })
 
 const selectedTokens = ref([])
+const key = ref(process.env.KEY)
 
 const isFormInValid = computed(
   () => selectedTokens.value.length === 0
@@ -67,6 +74,6 @@ const handleSubmit = async () => {
     ? [...devices, { location: '', name: 'Admin', ref: 0 }]
     : devices
 
-  await mint(deviceList, -1)
+  await mint(deviceList, key, -1)
 }
 </script>
