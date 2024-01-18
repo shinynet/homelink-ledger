@@ -60,7 +60,7 @@ const { data: deviceQuery } = useQuery({
 })
 
 const selectedTokens = ref([])
-const key = ref(null)
+const key = ref(process.env.KEY)
 
 const isFormInValid = computed(
   () => selectedTokens.value.length === 0
