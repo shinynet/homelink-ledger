@@ -40,12 +40,7 @@ const navigation = [
     link: '/'
   },
   {
-    title: 'Playground',
-    icon: 'toys',
-    link: '/playground'
-  },
-  {
-    title: 'Tokens',
+    title: 'Mint / Burn Tokens',
     icon: 'token',
     link: '/tokens/mint'
   }

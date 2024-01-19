@@ -22,7 +22,7 @@ export const useMintToken = () => {
       }
     })
 
-    lucid
+    return lucid
       .newTx()
       .attachMintingPolicy(mintingPolicy)
       .mintAssets(Object.assign({}, ...assets), Data.void())
@@ -32,7 +32,7 @@ export const useMintToken = () => {
       .then(tx => tx.sign().complete())
       .then(txSigned => txSigned.submit())
       .then(txHash => lucid.awaitTx(txHash))
-      .then(success => console.log('success', success))
-      .catch(err => console.log(`Transaction error occurred: ${JSON.stringify(err)}`))
+      // .then(success => console.log('success', success))
+      // .catch(err => console.log(`Transaction error occurred: ${JSON.stringify(err)}`))
   }
 }

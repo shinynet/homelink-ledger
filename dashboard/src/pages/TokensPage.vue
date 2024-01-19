@@ -1,6 +1,5 @@
 <template>
   <q-page padding>
-
       <q-tabs
         v-model="tab"
         dense
@@ -12,7 +11,6 @@
         <q-route-tab name="mails" label="Mint Tokens" to="/tokens/mint" />
         <q-route-tab name="alarms" label="Burn Tokens" to="/tokens/burn" />
       </q-tabs>
-
     <router-view />
   </q-page>
 </template>
