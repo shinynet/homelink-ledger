@@ -1,33 +1,18 @@
 import { toValue } from 'vue'
 import { lucid } from 'boot/lucid'
-import { applyDoubleCborEncoding, applyParamsToScript, Data, fromText } from 'lucid-cardano'
-import blueprint from '../../../aiken/plutus.json'
+import { Data, fromText } from 'lucid-cardano'
+import { getMintingPolicy, getPolicyId } from 'src/utils/contract'
+import { getAddress } from 'src/utils/wallet'
 import metadata from '../../../aiken/sample.json'
 
 export const useMintToken = () => {
-  return async (deviceList, key, amount = 1) => {
+  return async (deviceList, licenseKey, amount = 1) => {
+    const key = toValue(licenseKey)
     const devices = toValue(deviceList)
 
-    const address = await lucid.wallet.address()
-
-    const token = blueprint.validators.find(
-      v => v.title === 'lights.token'
-    )
-
-    const parameterizedScript = applyParamsToScript(
-      token.compiledCode,
-      [fromText(key)]
-    )
-
-    const parameterizedMintingPolicy = {
-      type: 'PlutusV2',
-      script: applyDoubleCborEncoding(parameterizedScript)
-    }
-
-    const policyId = lucid.utils.validatorToScriptHash({
-      type: 'PlutusV2',
-      script: parameterizedScript
-    })
+    const address = await getAddress()
+    const mintingPolicy = getMintingPolicy(key)
+    const policyId = getPolicyId(key)
 
     const assets = devices.map(d => {
       const deviceName = `${d.location} ${d.name}`
@@ -39,7 +24,7 @@ export const useMintToken = () => {
 
     lucid
       .newTx()
-      .attachMintingPolicy(parameterizedMintingPolicy)
+      .attachMintingPolicy(mintingPolicy)
       .mintAssets(Object.assign({}, ...assets), Data.void())
       .attachMetadata(202312091500, metadata)
       .addSigner(address)

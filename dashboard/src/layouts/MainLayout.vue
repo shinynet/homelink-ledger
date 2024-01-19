@@ -1,9 +1,10 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <LayoutHeader @toggle="handleToggleDrawer"/>
-    <LayoutDrawer
+    <layout-header @toggle="handleToggleDrawer"/>
+    <layout-drawer
       :drawer-open="drawerOpen"
       @hide="handleDrawerHide"/>
+    <layout-drawer-right/>
     <q-page-container>
       <router-view />
     </q-page-container>
@@ -16,6 +17,7 @@ import { ref } from 'vue'
 import LayoutFooter from 'layouts/mainLayout/LayoutFooter.vue'
 import LayoutDrawer from 'layouts/mainLayout/LayoutDrawer.vue'
 import LayoutHeader from 'layouts/mainLayout/LayoutHeader.vue'
+import LayoutDrawerRight from 'layouts/mainLayout/LayoutDrawerRight.vue'
 
 const drawerOpen = ref(false)
 
