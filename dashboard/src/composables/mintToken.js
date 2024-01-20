@@ -6,7 +6,7 @@ import { getAddress } from 'src/utils/wallet'
 import metadata from '../../../aiken/sample.json'
 
 export const useMintToken = () => {
-  return async (deviceList, licenseKey, amount = 1) => {
+  return async (deviceList, licenseKey) => {
     const key = toValue(licenseKey)
     const devices = toValue(deviceList)
 
@@ -15,10 +15,9 @@ export const useMintToken = () => {
     const policyId = getPolicyId(key)
 
     const assets = devices.map(d => {
-      const deviceName = `${d.location} ${d.name}`
-      const assetName = `${policyId}${fromText(deviceName)}`
+      const assetName = `${policyId}${fromText(d.name)}`
       return {
-        [assetName]: BigInt(amount)
+        [assetName]: BigInt(d.quantity)
       }
     })
 
@@ -32,7 +31,5 @@ export const useMintToken = () => {
       .then(tx => tx.sign().complete())
       .then(txSigned => txSigned.submit())
       .then(txHash => lucid.awaitTx(txHash))
-      // .then(success => console.log('success', success))
-      // .catch(err => console.log(`Transaction error occurred: ${JSON.stringify(err)}`))
   }
 }

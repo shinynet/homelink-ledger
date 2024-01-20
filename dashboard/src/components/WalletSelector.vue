@@ -1,13 +1,13 @@
 <template>
   <q-select
     v-if="showWalletSelector"
-    filled
+    standout
     dense
     emit-value
-    bg-color="white"
     v-model="model"
     :options="data"
     label="Wallet"
+    hide-bottom-space
     class="select"
     option-label="name"
     option-value="id"/>
@@ -28,7 +28,9 @@ const { data } = useQuery({
   queryKey: ['wallets']
 })
 
-const showWalletSelector = computed(() => data.value?.length > 1)
+const showWalletSelector = computed(() =>
+  data.value?.length > 1
+)
 
 const model = ref($q.localStorage.getItem('wallet'))
 

@@ -13,7 +13,7 @@
         <q-img src="logo.png" style="width: 180px; height: 75px"/>
       </q-toolbar-title>
 
-      <wallet-selector class="xs-hide"/>
+      <wallet-selector class="xs-hide" dark/>
     </q-toolbar>
   </q-header>
 </template>
