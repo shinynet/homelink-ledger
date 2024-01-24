@@ -22,13 +22,12 @@ import { getPolicyId } from 'src/utils/contract'
 
 /**
  * @typedef {Object} Device
- * @property {ControlPair[]} ControlPairs
+ * @property {ControlPair[]} controlPairs
  * @property {string} location
- * @property {string} location2
  * @property {string} name
  * @property {string} ref
  * @property {string} status
- * @property {string} status_image
+ * @property {string} statusImage
  * @property {number} value
  */
 
@@ -48,17 +47,10 @@ export const getWalletUtxos = () => lucid.wallet.getUtxos()
 
 export const getDevices = () => api
   .get('/devices')
-  .then(
-    ({ data }) => data
-      .map(device => ({ ...device, id: device.ref }))
-      .sort((d1, d2) => d1.location + d1.name < d2.location + d2.name
-        ? -1
-        : 1
-      )
-  )
+  .then(({ data }) => data)
 
-export const updateDevice = ({ ref, value }) => api
-  .patch(`/devices/${ref}`, {
+export const updateDevice = ({ id, value }) => api
+  .patch(`/devices/${id}`, {
     value
   })
 

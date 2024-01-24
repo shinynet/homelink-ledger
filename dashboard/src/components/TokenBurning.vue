@@ -56,6 +56,7 @@ const { data: tokensQuery } = useQuery({
   queryFn: getTokens,
   queryKey: ['tokens']
 })
+console.log('tokensQuery: ', tokensQuery.value)
 
 const deviceRefs = ref([])
 const selectedDevices = ref([])
@@ -86,7 +87,7 @@ const handleDeviceSelect = device => {
 
 const handleDeviceUnselect = device => {
   const index = selectedDevices.value.findIndex(
-    ({ deviceId }) => deviceId === device.deviceId
+    ({ id }) => id === device.id
   )
   selectedDevices.value.splice(index, 1)
 }
@@ -106,7 +107,7 @@ const handleSubmit = () => {
 
   const adminToken = {
     name: 'Admin',
-    deviceId: 0,
+    id: 0,
     quantity: adminTokenQty.value
   }
   const devices = mintAdminToken.value

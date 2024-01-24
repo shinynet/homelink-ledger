@@ -23,11 +23,11 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 
-defineOptions({ name: 'token-minting-device' })
+defineOptions({ name: 'token-burning-device' })
 
 const props = defineProps({
   assetName: { type: String, required: true },
-  assetQty: { type: BigInt, required: true }
+  assetQty: { type: Number, required: true }
 })
 
 const emit = defineEmits([

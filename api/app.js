@@ -1,11 +1,12 @@
 const express = require('express')
+const homeseer = require('./homeseer')
 const cors = require('cors')
 const axios = require('axios')
 require('dotenv').config()
 
 const app = express()
 
-const api = axios.create({
+const axiosConfig = axios.create({
   baseURL: process.env.HS4_BASE_URL,
   params: {
     user: process.env.HS4_USER,
@@ -15,38 +16,14 @@ const api = axios.create({
 
 app.use(cors())
 app.use(express.json())
+app.use('/', homeseer(axiosConfig))
 
 app.get('/status', (req, res) => {
   res.send('API Running')
 })
 
-app.get('/devices', (req, res) => {
-  api.get('JSON', {
-    params: {
-      request: 'getstatus',
-      everything: true,
-      ref: '74,75,6,77'
-    }
-  })
-    .then(({ data }) => {
-      res.json(data.Devices)
-    })
-})
-
-app.patch('/devices/:ref', (req, res) => {
-  const { ref } = req.params
-  const { value } = req.body
-  api.get('JSON', {
-    params: {
-      request: 'controldevicebyvalue',
-      value,
-      ref
-    }
-  })
-    .then(({ data }) => {
-      const [device] = data.Devices
-      res.json(device)
-    })
+app.use((req, res) => {
+  res.status(404).send('Not found')
 })
 
 app.listen(process.env.PORT, () => {

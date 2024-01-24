@@ -2,8 +2,8 @@
   <q-card class="no-box-shadow bg-grey-2">
     <q-card-section class="q-pa-none no-wrap">
       <h2 class="text-h6 q-pa-sm q-my-none text-white card-title">
-        {{location}} {{name}}
-        <span class="text-caption float-right">{{location2}}</span>
+        {{name}}
+        <span class="text-caption float-right">{{location}}</span>
       </h2>
     </q-card-section>
 
@@ -55,10 +55,6 @@ const props = defineProps({
     type: String,
     required: true
   },
-  location2: {
-    type: String,
-    required: true
-  },
   name: {
     type: String,
     required: true
@@ -96,7 +92,7 @@ const controlComponent = controlType => {
 }
 
 const handleDeviceChange = value => {
-  mutate({ ref: props.id, value })
+  mutate({ id: props.id, value })
 }
 </script>
 
