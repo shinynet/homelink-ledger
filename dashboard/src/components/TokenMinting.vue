@@ -2,38 +2,26 @@
   <q-list padding style="max-width: 500px">
     <q-item-label header>Devices</q-item-label>
     <token-minting-device
-      ref="deviceRefs"
-      v-for="{location, location2, name, ref} in deviceQuery"
-      :key="ref"
+      v-for="{location, name, id} in deviceQuery"
+      :key="id"
       :location="location"
-      :location2="location2"
       :name="name"
-      :deviceId="ref"
+      :id="id"
+      ref="deviceRefs"
       @select="handleDeviceSelect"
       @unselect="handleDeviceUnselect"
       @change="handleDeviceChange"/>
 
     <q-separator spaced/>
 
-    <q-item-label header>Admin Token</q-item-label>
-    <q-item tag="label" v-ripple>
-      <q-item-section side>
-        <q-checkbox v-model="mintAdminToken"/>
-      </q-item-section>
-      <q-item-section>
-        <q-item-label>Admin</q-item-label>
-      </q-item-section>
-      <q-item-section>
-        <q-input
-          dense
-          label="Qty"
-          mask="###"
-          filled
-          v-model.number="adminTokenQty"
-          class="quantity-field"
-          :rules="quantityRules"/>
-      </q-item-section>
-    </q-item>
+    <token-minting-device
+      ref="adminRef"
+      :id="0"
+      name="Admin"
+      location=""
+      @select="handleDeviceSelect"
+      @unselect="handleDeviceUnselect"
+      @change="handleDeviceChange"/>
 
     <q-separator spaced/>
 
@@ -81,26 +69,19 @@ const { data: deviceQuery } = useQuery({
   queryKey: ['devices']
 })
 
+const adminRef = ref()
 const deviceRefs = ref([])
 const selectedDevices = ref([])
-const mintAdminToken = ref(false)
-const adminTokenQty = ref(1)
 const key = ref(process.env.KEY)
 
-const quantityRules = computed(() => [
-  value => value > 0 || '1 minimum',
-  value => value <= 100 || '100 maximum'
-])
-
 const isFormInValid = computed(() =>
-  mintAdminToken.value === false &&
   selectedDevices.value.length === 0
 )
 
 const reset = () => {
   selectedDevices.value = []
-  mintAdminToken.value = false
   key.value = process.env.KEY
+  adminRef.value.reset()
   deviceRefs.value.forEach(r => r.reset())
 }
 
@@ -115,14 +96,14 @@ const handleDeviceSelect = device => {
 
 const handleDeviceUnselect = device => {
   const index = selectedDevices.value.findIndex(
-    ({ deviceId }) => deviceId === device.deviceId
+    ({ id }) => id === device.id
   )
   selectedDevices.value.splice(index, 1)
 }
 
 const handleDeviceChange = device => {
   const index = selectedDevices.value.findIndex(
-    ({ deviceId }) => deviceId === device.deviceId
+    ({ id }) => id === device.id
   )
   selectedDevices.value.splice(index, 1, device)
 }
@@ -133,16 +114,7 @@ const handleSubmit = () => {
     boxClass: 'bg-primary'
   })
 
-  const adminToken = {
-    name: 'Admin',
-    deviceId: 0,
-    quantity: adminTokenQty.value
-  }
-  const devices = mintAdminToken.value
-    ? [...selectedDevices.value, adminToken]
-    : selectedDevices
-
-  mint(devices, key)
+  mint(selectedDevices, key)
     .then(() => {
       notify({
         progress: true,
@@ -170,9 +142,3 @@ onBeforeUnmount(() => {
   loading.hide()
 })
 </script>
-
-<style scoped lang="scss">
-.quantity-field {
-  max-width: 100px;
-}
-</style>

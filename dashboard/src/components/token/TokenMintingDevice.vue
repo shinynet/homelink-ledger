@@ -4,8 +4,8 @@
       <q-checkbox v-model="selected"/>
     </q-item-section>
     <q-item-section>
-      <q-item-label>{{ deviceName }}</q-item-label>
-      <q-item-label caption>{{ location2 }}</q-item-label>
+      <q-item-label>{{ name }}</q-item-label>
+      <q-item-label caption>{{ location }}</q-item-label>
     </q-item-section>
     <q-item-section>
       <q-input
@@ -28,9 +28,8 @@ defineOptions({ name: 'token-minting-device' })
 
 const props = defineProps({
   location: { type: String, required: true },
-  location2: { type: String, required: true },
   name: { type: String, required: true },
-  deviceId: { type: Number, required: true }
+  id: { type: Number, required: true }
 })
 
 const emit = defineEmits([
@@ -42,13 +41,9 @@ const emit = defineEmits([
 const selected = ref(false)
 const quantity = ref(1)
 
-const deviceName = computed(() =>
-  `${props.location} ${props.name}`
-)
-
 const payload = computed(() => ({
-  deviceId: props.deviceId,
-  name: deviceName.value,
+  id: props.id,
+  name: props.name,
   quantity: quantity.value
 }))
 

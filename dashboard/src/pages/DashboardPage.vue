@@ -1,77 +1,64 @@
 <template>
   <q-page padding class="grid">
-    <q-banner v-if="isDevicesError" class="error-banner text-white bg-red">
-      {{devicesError.message}}
-    </q-banner>
-
     <device-card
-      v-else-if="isDevicesSuccess"
       v-for="{
-        ref,
-        ControlPairs: controlPairs,
+        id,
+        controlPairs,
         location,
-        location2,
         name,
         status,
-        status_image: statusImage,
+        statusImage,
         value
-      } in filteredDevices"
-      :key="ref"
+      } in devices"
+      :key="id"
       :control-pairs="controlPairs"
-      :id="ref"
+      :id="id"
       :location="location"
-      :location2="location2"
       :name="name"
       :status="status"
       :status-image="statusImage"
       :value="value"
       class="card"/>
+
+    <q-inner-loading
+      :showing="showLoading"
+      label="Please wait..."/>
   </q-page>
 </template>
 
 <script setup>
-import { computed, watch } from 'vue'
-import { useQuasar } from 'quasar'
+import { computed } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
-import { getTokens, getDevices } from 'src/endpoints'
 import DeviceCard from 'components/DeviceCard.vue'
+import { getDevices, getTokens } from 'src/endpoints'
 
-const $q = useQuasar()
-
-const { data: tokens, isSuccess: tokensIsSuccess } = useQuery({
+const {
+  data: tokens,
+  isLoading: isTokensLoading,
+  isSuccess: tokensIsSuccess
+} = useQuery({
   queryFn: getTokens,
   queryKey: ['tokens']
 })
 
-const tokenNameList = computed(() =>
+const tokenList = computed(() =>
   tokens.value?.map(({ assetName }) => assetName)
+)
+
+const showLoading = computed(() =>
+  isTokensLoading.value || isDevicesLoading.value
 )
 
 const {
   data: devices,
-  error: devicesError,
-  isError: isDevicesError,
-  isSuccess: isDevicesSuccess,
-  status: devicesStatus
+  isLoading: isDevicesLoading
 } = useQuery({
   queryFn: getDevices,
   queryKey: ['devices'],
-  enabled: tokensIsSuccess
-})
-
-const filteredDevices = computed(() =>
-  devices.value?.filter(({ name, location }) =>
-    tokenNameList.value.includes(`${location} ${name}`))
-)
-
-watch(devicesStatus, status => {
-  if (status === 'pending') {
-    $q.loading.show({
-      delay: 400 // ms
-    })
-  } else {
-    $q.loading.hide()
-  }
+  enabled: tokensIsSuccess,
+  select: devices => devices.filter(
+    ({ name }) => tokenList.value.includes(name)
+  )
 })
 </script>
 

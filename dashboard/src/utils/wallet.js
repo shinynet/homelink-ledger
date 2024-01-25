@@ -25,7 +25,10 @@ const parseAssetName = ifElse(
 
 const utxosToAssets = compose(
   sortByAssetName,
-  map(evolve({ assetName: parseAssetName })),
+  map(evolve({
+    assetName: parseAssetName,
+    quantity: Number
+  })),
   map(omit(['label', 'name'])),
   values,
   mapObjIndexed(parseAsset),

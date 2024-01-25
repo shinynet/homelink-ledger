@@ -12,10 +12,10 @@
     </q-list>
 
     <h2 class="text-h6">Devices</h2>
-    <q-scroll-area style="height: 300px;" v-for="device in devices" :key="device.ref">
+    <q-scroll-area style="height: 300px;" v-for="device in devices" :key="device.id">
       <q-btn-group flat>
-        <q-btn push label="On" @click="handleDeviceChange('On', device.ref)" />
-        <q-btn push label="Off" @click="handleDeviceChange('Off', device.ref)" />
+        <q-btn push label="On" @click="handleDeviceChange('On', device.id)" />
+        <q-btn push label="Off" @click="handleDeviceChange('Off', device.id)" />
       </q-btn-group>
       <pre>{{JSON.stringify(device, undefined, 2)}}</pre>
     </q-scroll-area>
@@ -56,8 +56,8 @@ const { mutate: mutateDevice } = useMutation({
   }
 })
 
-const handleDeviceChange = (label, ref) => {
-  mutateDevice({ label, ref })
+const handleDeviceChange = (label, id) => {
+  mutateDevice({ label, id })
 }
 
 const { data: utxos } = useQuery({
