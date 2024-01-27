@@ -4,13 +4,11 @@
     <token-minting-device
       v-for="{location, name, id} in deviceQuery"
       :key="id"
-      :location="location"
-      :name="name"
-      :id="id"
       ref="deviceRefs"
-      @select="handleDeviceSelect"
-      @unselect="handleDeviceUnselect"
-      @change="handleDeviceChange"/>
+      :id="id"
+      :name="name"
+      :location="location"
+      v-model="selectedDevices"/>
 
     <q-separator spaced/>
 
@@ -19,9 +17,7 @@
       :id="0"
       name="Admin"
       location=""
-      @select="handleDeviceSelect"
-      @unselect="handleDeviceUnselect"
-      @change="handleDeviceChange"/>
+      v-model="selectedDevices"/>
 
     <q-separator spaced/>
 
@@ -36,6 +32,7 @@
         @click="handleSubmit"/>
     </q-item>
   </q-list>
+  {{selectedDevices}}
 </template>
 
 <script setup>
@@ -78,24 +75,6 @@ const reset = () => {
 const invalidateQueries = () => {
   queryClient.invalidateQueries({ queryKey: ['devices'] })
   queryClient.invalidateQueries({ queryKey: ['tokens'] })
-}
-
-const handleDeviceSelect = device => {
-  selectedDevices.value.push(device)
-}
-
-const handleDeviceUnselect = device => {
-  const index = selectedDevices.value.findIndex(
-    ({ id }) => id === device.id
-  )
-  selectedDevices.value.splice(index, 1)
-}
-
-const handleDeviceChange = device => {
-  const index = selectedDevices.value.findIndex(
-    ({ id }) => id === device.id
-  )
-  selectedDevices.value.splice(index, 1, device)
 }
 
 const handleSubmit = () => {
