@@ -2,14 +2,12 @@
   <q-list padding style="max-width: 500px">
     <q-item-label header>Devices</q-item-label>
     <token-burning-device
-      ref="deviceRefs"
       v-for="{assetName, quantity} in tokensQuery"
       :key="assetName"
-      :assetName="assetName"
-      :assetQty="quantity"
-      @select="handleDeviceSelect"
-      @unselect="handleDeviceUnselect"
-      @change="handleDeviceChange"/>
+      ref="deviceRefs"
+      :name="assetName"
+      :quantity="quantity"
+      v-model="selectedTokens"/>
 
     <q-separator spaced/>
 
@@ -48,19 +46,22 @@ const { data: tokensQuery } = useQuery({
 })
 
 const deviceRefs = ref([])
-const selectedDevices = ref([])
-const mintAdminToken = ref(false)
-const adminTokenQty = ref(1)
+const selectedTokens = ref([])
 const licenseKey = ref(process.env.KEY)
 
+const burnTokens = computed(() =>
+  selectedTokens.value.map(token => ({
+    ...token,
+    quantity: -token.quantity
+  }))
+)
+
 const isFormInValid = computed(() =>
-  mintAdminToken.value === false &&
-  selectedDevices.value.length === 0
+  selectedTokens.value.length === 0
 )
 
 const reset = () => {
-  selectedDevices.value = []
-  mintAdminToken.value = false
+  selectedTokens.value = []
   licenseKey.value = process.env.KEY
   deviceRefs.value.forEach(r => r.reset())
 }
@@ -70,40 +71,13 @@ const invalidateQueries = () => {
   queryClient.invalidateQueries({ queryKey: ['tokens'] })
 }
 
-const handleDeviceSelect = device => {
-  selectedDevices.value.push(device)
-}
-
-const handleDeviceUnselect = device => {
-  const index = selectedDevices.value.findIndex(
-    ({ id }) => id === device.id
-  )
-  selectedDevices.value.splice(index, 1)
-}
-
-const handleDeviceChange = device => {
-  const index = selectedDevices.value.findIndex(
-    ({ deviceId }) => deviceId === device.deviceId
-  )
-  selectedDevices.value.splice(index, 1, device)
-}
-
 const handleSubmit = () => {
   loading.show({
     message: 'Burning Tokens. Please wait...',
     boxClass: 'bg-primary'
   })
 
-  const adminToken = {
-    name: 'Admin',
-    id: 0,
-    quantity: adminTokenQty.value
-  }
-  const devices = mintAdminToken.value
-    ? [...selectedDevices.value, adminToken]
-    : selectedDevices
-
-  mint(devices, licenseKey)
+  mint(burnTokens, licenseKey)
     .then(() => {
       notify({
         progress: true,
@@ -131,9 +105,3 @@ onBeforeUnmount(() => {
   loading.hide()
 })
 </script>
-
-<style scoped lang="scss">
-.quantity-field {
-  max-width: 100px;
-}
-</style>

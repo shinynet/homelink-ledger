@@ -32,7 +32,6 @@
         @click="handleSubmit"/>
     </q-item>
   </q-list>
-  {{selectedDevices}}
 </template>
 
 <script setup>

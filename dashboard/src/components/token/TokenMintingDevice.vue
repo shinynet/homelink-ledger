@@ -19,7 +19,6 @@
         v-model.number="device.quantity"
         class="quantity-field"
         :rules="quantityRules"/>
-      {{device}}
     </q-item-section>
   </q-item>
 </template>
