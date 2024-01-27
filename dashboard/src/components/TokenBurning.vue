@@ -25,6 +25,7 @@
 </template>
 
 <script setup>
+/* eslint-disable no-unused-vars */
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { useQuasar } from 'quasar'
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
@@ -33,10 +34,10 @@ import { useMintToken } from 'src/composables/mintToken'
 import TokenBurningDevice from 'components/token/TokenBurningDevice.vue'
 import TokenSettings from 'components/token/TokenSettings.vue'
 
-const { loading, notify } = useQuasar()
+const { dialog, loading, notify } = useQuasar()
 const queryClient = useQueryClient()
 
-defineOptions({ name: 'token-minting' })
+defineOptions({ name: 'token-burning' })
 
 const mint = useMintToken()
 
@@ -49,11 +50,27 @@ const deviceRefs = ref([])
 const selectedTokens = ref([])
 const licenseKey = ref(process.env.KEY)
 
-const burnTokens = computed(() =>
+const burningTokens = computed(() =>
   selectedTokens.value.map(token => ({
     ...token,
     quantity: -token.quantity
   }))
+)
+
+const adminOwnedQty = computed(() =>
+  tokensQuery.value?.find(
+    token => token.assetName === 'Admin'
+  )?.quantity
+)
+
+const adminBurnQty = computed(() =>
+  burningTokens.value.find(
+    token => token.name === 'Admin'
+  )?.quantity
+)
+
+const burningLastAdmin = computed(() =>
+  adminOwnedQty.value + adminBurnQty.value === 0
 )
 
 const isFormInValid = computed(() =>
@@ -71,13 +88,13 @@ const invalidateQueries = () => {
   queryClient.invalidateQueries({ queryKey: ['tokens'] })
 }
 
-const handleSubmit = () => {
+const burnTokens = () => {
   loading.show({
     message: 'Burning Tokens. Please wait...',
     boxClass: 'bg-primary'
   })
 
-  mint(burnTokens, licenseKey)
+  mint(burningTokens, licenseKey)
     .then(() => {
       notify({
         progress: true,
@@ -99,6 +116,21 @@ const handleSubmit = () => {
       loading.hide()
       setTimeout(invalidateQueries, 2000)
     })
+}
+
+const handleSubmit = () => {
+  if (burningLastAdmin.value) {
+    dialog({
+      title: 'Confirm',
+      message: 'You\'re burning your last admin token which may prevent you from burning tokens in the future',
+      cancel: true,
+      persistent: true
+    }).onOk(() => {
+      burnTokens()
+    })
+  } else {
+    burnTokens()
+  }
 }
 
 onBeforeUnmount(() => {
