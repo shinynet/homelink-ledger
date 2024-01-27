@@ -13,18 +13,7 @@
 
     <q-separator spaced/>
 
-    <q-expansion-item
-      icon="settings"
-      label="Settings">
-      <q-card>
-        <q-card-section>
-          <q-input
-            dense
-            v-model="key"
-            label="License Key"/>
-        </q-card-section>
-      </q-card>
-    </q-expansion-item>
+    <token-settings v-model="licenseKey"/>
 
     <q-item>
       <q-btn
@@ -44,6 +33,7 @@ import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { getTokens } from 'src/endpoints'
 import { useMintToken } from 'src/composables/mintToken'
 import TokenBurningDevice from 'components/token/TokenBurningDevice.vue'
+import TokenSettings from 'components/token/TokenSettings.vue'
 
 const { loading, notify } = useQuasar()
 const queryClient = useQueryClient()
@@ -56,13 +46,12 @@ const { data: tokensQuery } = useQuery({
   queryFn: getTokens,
   queryKey: ['tokens']
 })
-console.log('tokensQuery: ', tokensQuery.value)
 
 const deviceRefs = ref([])
 const selectedDevices = ref([])
 const mintAdminToken = ref(false)
 const adminTokenQty = ref(1)
-const key = ref(process.env.KEY)
+const licenseKey = ref(process.env.KEY)
 
 const isFormInValid = computed(() =>
   mintAdminToken.value === false &&
@@ -72,7 +61,7 @@ const isFormInValid = computed(() =>
 const reset = () => {
   selectedDevices.value = []
   mintAdminToken.value = false
-  key.value = process.env.KEY
+  licenseKey.value = process.env.KEY
   deviceRefs.value.forEach(r => r.reset())
 }
 
@@ -114,7 +103,7 @@ const handleSubmit = () => {
     ? [...selectedDevices.value, adminToken]
     : selectedDevices
 
-  mint(devices, key)
+  mint(devices, licenseKey)
     .then(() => {
       notify({
         progress: true,
