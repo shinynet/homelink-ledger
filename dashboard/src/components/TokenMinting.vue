@@ -4,13 +4,11 @@
     <token-minting-device
       v-for="{location, name, id} in deviceQuery"
       :key="id"
-      :location="location"
-      :name="name"
-      :id="id"
       ref="deviceRefs"
-      @select="handleDeviceSelect"
-      @unselect="handleDeviceUnselect"
-      @change="handleDeviceChange"/>
+      :id="id"
+      :name="name"
+      :location="location"
+      v-model="selectedDevices"/>
 
     <q-separator spaced/>
 
@@ -19,24 +17,11 @@
       :id="0"
       name="Admin"
       location=""
-      @select="handleDeviceSelect"
-      @unselect="handleDeviceUnselect"
-      @change="handleDeviceChange"/>
+      v-model="selectedDevices"/>
 
     <q-separator spaced/>
 
-    <q-expansion-item
-      icon="settings"
-      label="Settings">
-      <q-card>
-        <q-card-section>
-          <q-input
-            dense
-            v-model="key"
-            label="License Key"/>
-        </q-card-section>
-      </q-card>
-    </q-expansion-item>
+    <token-settings v-model="licenseKey"/>
 
     <q-item>
       <q-btn
@@ -56,6 +41,7 @@ import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { getDevices } from 'src/endpoints'
 import { useMintToken } from 'src/composables/mintToken'
 import TokenMintingDevice from 'components/token/TokenMintingDevice.vue'
+import TokenSettings from 'components/token/TokenSettings.vue'
 
 const { loading, notify } = useQuasar()
 const queryClient = useQueryClient()
@@ -72,7 +58,7 @@ const { data: deviceQuery } = useQuery({
 const adminRef = ref()
 const deviceRefs = ref([])
 const selectedDevices = ref([])
-const key = ref(process.env.KEY)
+const licenseKey = ref(process.env.KEY)
 
 const isFormInValid = computed(() =>
   selectedDevices.value.length === 0
@@ -80,7 +66,7 @@ const isFormInValid = computed(() =>
 
 const reset = () => {
   selectedDevices.value = []
-  key.value = process.env.KEY
+  licenseKey.value = process.env.KEY
   adminRef.value.reset()
   deviceRefs.value.forEach(r => r.reset())
 }
@@ -90,31 +76,13 @@ const invalidateQueries = () => {
   queryClient.invalidateQueries({ queryKey: ['tokens'] })
 }
 
-const handleDeviceSelect = device => {
-  selectedDevices.value.push(device)
-}
-
-const handleDeviceUnselect = device => {
-  const index = selectedDevices.value.findIndex(
-    ({ id }) => id === device.id
-  )
-  selectedDevices.value.splice(index, 1)
-}
-
-const handleDeviceChange = device => {
-  const index = selectedDevices.value.findIndex(
-    ({ id }) => id === device.id
-  )
-  selectedDevices.value.splice(index, 1, device)
-}
-
 const handleSubmit = () => {
   loading.show({
     message: 'Minting Tokens. Please wait...',
     boxClass: 'bg-primary'
   })
 
-  mint(selectedDevices, key)
+  mint(selectedDevices, licenseKey)
     .then(() => {
       notify({
         progress: true,

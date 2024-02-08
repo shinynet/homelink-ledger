@@ -1,7 +1,9 @@
 <template>
   <q-item tag="label" v-ripple>
     <q-item-section side>
-      <q-checkbox v-model="selected"/>
+      <q-checkbox
+        v-model="model"
+        :val="device"/>
     </q-item-section>
     <q-item-section>
       <q-item-label>{{ name }}</q-item-label>
@@ -14,7 +16,7 @@
         mask="###"
         standout
         hide-bottom-space
-        v-model.number="quantity"
+        v-model.number="device.quantity"
         class="quantity-field"
         :rules="quantityRules"/>
     </q-item-section>
@@ -22,7 +24,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 
 defineOptions({ name: 'token-minting-device' })
 
@@ -32,20 +34,13 @@ const props = defineProps({
   id: { type: Number, required: true }
 })
 
-const emit = defineEmits([
-  'select',
-  'unselect',
-  'change'
-])
+const model = defineModel()
 
-const selected = ref(false)
-const quantity = ref(1)
-
-const payload = computed(() => ({
+const device = ref({
   id: props.id,
   name: props.name,
-  quantity: quantity.value
-}))
+  quantity: 1
+})
 
 const quantityRules = computed(() => [
   value => value > 0 || '1 minimum',
@@ -53,21 +48,8 @@ const quantityRules = computed(() => [
 ])
 
 const reset = () => {
-  selected.value = false
-  quantity.value = 1
+  device.value.quantity = 1
 }
-
-watch(selected, value => {
-  value
-    ? emit('select', payload.value)
-    : emit('unselect', payload.value)
-})
-
-watch(quantity, () => {
-  if (selected.value) {
-    emit('change', payload.value)
-  }
-})
 
 defineExpose({ reset })
 </script>
