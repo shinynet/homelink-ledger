@@ -1,11 +1,18 @@
 import { toValue } from 'vue'
 import { lucid } from 'boot/lucid'
+import { useQuery } from '@tanstack/vue-query'
 import { Data, fromText } from 'lucid-cardano'
 import { getMintingPolicy, getPolicyId } from 'src/utils/contract'
 import { getAddress } from 'src/utils/wallet'
-import metadata from '../../../aiken/sample.json'
+import { getDevices } from 'src/endpoints'
+import { append } from 'ramda'
 
 export const useMintToken = () => {
+  const { data: deviceQuery } = useQuery({
+    queryFn: getDevices,
+    queryKey: ['devices']
+  })
+
   return async (deviceList, licenseKey) => {
     const key = toValue(licenseKey)
     const devices = toValue(deviceList)
@@ -21,11 +28,30 @@ export const useMintToken = () => {
       }
     })
 
+    const label = 202402112000
+
+    const allDevices = append({ name: 'Admin' }, toValue(deviceQuery))
+    const assetObjs = allDevices.map(d => {
+      const hexName = fromText(d.name)
+      return {
+        [hexName]: {
+          name: d.name,
+          image: 'https://batch-73.s3.us-west-1.amazonaws.com/Snuggle.png'
+        }
+      }
+    })
+
+    const metadata = {
+      [policyId]: Object.assign({}, ...assetObjs)
+    }
+
+    // console.log('metadata', metadata)
+
     return lucid
       .newTx()
       .attachMintingPolicy(mintingPolicy)
       .mintAssets(Object.assign({}, ...assets), Data.void())
-      .attachMetadata(202312091500, metadata)
+      .attachMetadata(label, metadata)
       .addSigner(address)
       .complete()
       .then(tx => tx.sign().complete())
