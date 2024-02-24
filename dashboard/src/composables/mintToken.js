@@ -45,8 +45,6 @@ export const useMintToken = () => {
       [policyId]: Object.assign({}, ...assetObjs)
     }
 
-    // console.log('metadata', metadata)
-
     return lucid
       .newTx()
       .attachMintingPolicy(mintingPolicy)
