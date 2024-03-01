@@ -19,6 +19,8 @@ import { useQuery } from '@tanstack/vue-query'
 import { getTokens } from 'src/endpoints'
 import WalletSelector from 'components/WalletSelector.vue'
 import { computed } from 'vue'
+import labels from './labels.json'
+import { fromText } from 'lucid-cardano'
 
 const { bottomSheet } = useQuasar()
 
@@ -32,7 +34,7 @@ const { data: tokens } = useQuery({
 const actions = computed(() =>
   tokens.value?.map(t => ({
     label: `${t.assetName} (${t.quantity})`,
-    icon: 'token'
+    img: labels[0].json_metadata['8c5545dc830f72c55339ac2924a40a8097769719fafaa601da4a68eb'][fromText('Admin')].image
   }))
 )
 
@@ -47,4 +49,9 @@ const showTokens = () => {
 
 const walletId = LocalStorage.getItem('wallet')
 const walletApi = window.cardano[walletId]
+
+console.log('labels', labels[0].json_metadata['8c5545dc830f72c55339ac2924a40a8097769719fafaa601da4a68eb'][fromText('Admin')].image)
+console.log('labels', labels[0].json_metadata['8c5545dc830f72c55339ac2924a40a8097769719fafaa601da4a68eb'][fromText('Office Light')].image)
+console.log('labels', labels[0].json_metadata['8c5545dc830f72c55339ac2924a40a8097769719fafaa601da4a68eb'][fromText('Storage Lights')].image)
+console.log('labels', labels[0].json_metadata['8c5545dc830f72c55339ac2924a40a8097769719fafaa601da4a68eb'][fromText('Fitness Room Lights')].image)
 </script>

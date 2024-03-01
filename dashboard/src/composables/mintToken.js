@@ -28,6 +28,7 @@ export const useMintToken = () => {
       }
     })
 
+    // TODO: Replace with license key (UUID)
     const label = 202402112000
 
     const allDevices = append({ name: 'Admin' }, toValue(deviceQuery))

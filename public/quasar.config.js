@@ -24,8 +24,8 @@ module.exports = configure(function (ctx) {
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-webpack/boot-files
     boot: [
-      'axios',
-      'lucid'
+
+      'axios'
     ],
 
     // https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js#Property%3A-css
@@ -102,7 +102,7 @@ module.exports = configure(function (ctx) {
       // directives: [],
 
       // Quasar plugins
-      plugins: ['Loading', 'Notify']
+      plugins: []
     },
 
     // animations: 'all', // --- includes all animations
@@ -147,9 +147,9 @@ module.exports = configure(function (ctx) {
       },
 
       manifest: {
-        name: 'HL Admin',
-        short_name: 'HL Admin',
-        description: 'A Quasar Project',
+        name: 'Homelink Ledger',
+        short_name: 'Homelink Ledger',
+        description: 'Homelink Ledger Marketing Site',
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',
@@ -214,7 +214,7 @@ module.exports = configure(function (ctx) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'admin'
+        appId: 'public'
       },
 
       // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain
