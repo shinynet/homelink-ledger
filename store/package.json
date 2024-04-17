@@ -1,7 +1,7 @@
 {
-  "name": "public",
+  "name": "store",
   "version": "0.0.1",
-  "description": "Homelink Ledger Marketing Site",
+  "description": "Homelink Ledger Store",
   "productName": "Homelink Ledger",
   "author": "Devin <devin@shinynet.com>",
   "private": true,
