@@ -5,19 +5,19 @@
       "8c5545dc830f72c55339ac2924a40a8097769719fafaa601da4a68eb": {
         "41646d696e": {
           "name": "Admin",
-          "image": "https://batch-73.s3.us-west-1.amazonaws.com/Snuggle.png"
+          "image": "https://batch-73.s3.us-west-1.amazonaws.com/admin-token.png"
         },
         "4f6666696365204c69676874": {
           "name": "Office Light",
-          "image": "https://batch-73.s3.us-west-1.amazonaws.com/Snuggle.png"
+          "image": "https://batch-73.s3.us-west-1.amazonaws.com/device-token.png"
         },
         "53746f72616765204c6967687473": {
           "name": "Storage Lights",
-          "image": "https://batch-73.s3.us-west-1.amazonaws.com/Snuggle.png"
+          "image": "https://batch-73.s3.us-west-1.amazonaws.com/device-token.png"
         },
         "4669746e65737320526f6f6d204c6967687473": {
           "name": "Fitness Room Lights",
-          "image": "https://batch-73.s3.us-west-1.amazonaws.com/Snuggle.png"
+          "image": "https://batch-73.s3.us-west-1.amazonaws.com/device-token.png"
         }
       }
     }
