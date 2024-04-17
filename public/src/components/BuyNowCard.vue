@@ -9,6 +9,8 @@
       <span class="text-h3">₳7</span>
     </q-card-section>
 
+    <q-separator color="primary" inset/>
+
     <q-card-actions vertical>
       <q-btn flat size="xl" to="order">Buy Now</q-btn>
     </q-card-actions>
@@ -16,7 +18,7 @@
 </template>
 
 <script setup>
-defineOptions({ name: 'purchase-card' })
+defineOptions({ name: 'buy-now-card' })
 </script>
 
 <style lang="scss" scoped>

@@ -10,7 +10,7 @@
 
     <div class="column-xs row-sm q-col-gutter-lg q-px-sm-sm">
       <div class="col-sm-6">
-        <purchase-card/>
+        <buy-now-card/>
       </div>
       <div class="col-sm-6">
         <testimonials-list/>
@@ -23,7 +23,7 @@
 <script setup>
 import TestimonialsList from 'components/TestimonialsList.vue'
 import HeroBanner from 'components/HeroBanner.vue'
-import PurchaseCard from 'components/PurchaseCard.vue'
+import BuyNowCard from 'components/BuyNowCard.vue'
 
 defineOptions({ name: 'index-page' })
 </script>

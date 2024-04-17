@@ -21,6 +21,17 @@ const routes = [
       }
     ]
   },
+  {
+    path: '/processed',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'Processed',
+        component: () => import('pages/ProcessedPage.vue')
+      }
+    ]
+  },
 
   // Always leave this as last one,
   // but you can also remove it
