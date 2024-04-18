@@ -4,10 +4,10 @@
     <q-header>
       <q-toolbar>
         <q-toolbar-title>
-          <q-img src="logo.png" style="width: 180px; height: 75px"/>
+          <router-link :to="{name: 'Home'}">
+            <img alt="Logo" src="logo.png" style="width: 180px; height: 75px"/>
+          </router-link>
         </q-toolbar-title>
-
-        <q-btn dense flat icon="shopping_cart" round/>
       </q-toolbar>
     </q-header>
 
