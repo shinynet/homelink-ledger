@@ -32,12 +32,15 @@ export const useMintToken = () => {
     const label = 202402112000
 
     const allDevices = append({ name: 'Admin' }, toValue(deviceQuery))
-    const assetObjs = allDevices.map(d => {
-      const hexName = fromText(d.name)
+    const assetObjs = allDevices.map(({ name }) => {
+      const iconFileName = name === 'Admin'
+        ? 'admin-token.png'
+        : 'device-token.png'
+      const hexName = fromText(name)
       return {
         [hexName]: {
-          name: d.name,
-          image: 'https://batch-73.s3.us-west-1.amazonaws.com/Snuggle.png'
+          name,
+          image: `https://bafybeiacnhsolswunkrirxubtgggkezroxagfuiur52tnpta3fcuoutaoa.ipfs.w3s.link/${iconFileName}`
         }
       }
     })
