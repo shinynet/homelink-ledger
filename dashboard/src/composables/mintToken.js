@@ -40,7 +40,7 @@ export const useMintToken = () => {
       return {
         [hexName]: {
           name,
-          image: `https://batch-73.s3.us-west-1.amazonaws.com/${iconFileName}`
+          image: `https://bafybeiacnhsolswunkrirxubtgggkezroxagfuiur52tnpta3fcuoutaoa.ipfs.w3s.link/${iconFileName}`
         }
       }
     })
